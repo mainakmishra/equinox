@@ -5,6 +5,12 @@ node_modules/
 yarn.lock
 package-lock.json
 
+# Frontend dependencies and build cache
+frontend/node_modules/
+frontend/package-lock.json
+frontend/yarn.lock
+frontend/.vite/
+
 # Python
 __pycache__/
 *.py[cod]
@@ -45,6 +51,24 @@ dist/
 build/
 .next/
 out/
+
+# Backend build and cache
+backend/__pycache__/
+backend/.mypy_cache/
+backend/.pytest_cache/
+backend/.env
+backend/.venv/
+backend/venv/
+backend/ENV/
+backend/env/
+backend/env.bak/
+backend/venv.bak/
+backend/.coverage
+backend/coverage/
+backend/*.egg-info/
+backend/dist/
+backend/build/
+backend/.DS_Store
 
 # Environment variables
 .env
