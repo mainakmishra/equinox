@@ -6,7 +6,7 @@ import Navbar from './components/Navbar/Navbar';
 
 function Home() {
   const [backendMsg, setBackendMsg] = useState<string | null>(null);
-  const PORT = import.meta.env.REACT_APP_BACKEND_PORT || '8000';
+  const PORT = import.meta.env.VITE_BACKEND_PORT || '8000';
   const testBackend = async () => {
     try {
       const res = await fetch(`http://localhost:${PORT}/ping`);
