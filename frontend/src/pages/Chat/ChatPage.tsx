@@ -19,8 +19,18 @@ export default function ChatInterface() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: input })
             });
+
+            if (!res.ok) {
+                throw new Error(`Request failed with status ${res.status}`);
+            }
+
             const data = await res.json();
-            setMessages(prev => [...prev, { text: data.reply, sender: 'bot', id: Date.now() }]);
+            const replyText =
+                data && typeof (data as any).reply === 'string'
+                    ? (data as any).reply
+                    : 'Unexpected response from AI';
+
+            setMessages(prev => [...prev, { text: replyText, sender: 'bot', id: Date.now() }]);
         } catch {
             setMessages(prev => [...prev, { text: 'Error connecting to AI', sender: 'bot', id: Date.now() }]);
         }
