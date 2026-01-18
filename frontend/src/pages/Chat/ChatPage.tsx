@@ -5,20 +5,34 @@ export default function ChatInterface() {
     const [messages, setMessages] = useState<{ text: string; sender: string; id: number }[]>([]);
     const [input, setInput] = useState('');
 
-    const handleSubmit = (e: any) => {
+    const handleSubmit = async (e: any) => {
         if (e) e.preventDefault();
-        if (input.trim()) {
-            setMessages([...messages, { text: input, sender: 'user', id: Date.now() }]);
-            setInput('');
+        if (!input.trim()) return;
+        const PORT = import.meta.env.REACT_APP_BACKEND_PORT || '8000';
+        const userMsg = { text: input, sender: 'user', id: Date.now() };
+        setMessages(prev => [...prev, userMsg]);
+        setInput('');
 
-            // Simulate response after a short delay
-            setTimeout(() => {
-                setMessages(prev => [...prev, {
-                    text: 'This is a simulated response. You can customize this behavior.',
-                    sender: 'bot',
-                    id: Date.now() + 1
-                }]);
-            }, 500);
+        try {
+            const res = await fetch(`http://localhost:${PORT}/chat`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: input })
+            });
+
+            if (!res.ok) {
+                throw new Error(`Request failed with status ${res.status}`);
+            }
+
+            const data = await res.json();
+            const replyText =
+                data && typeof (data as any).reply === 'string'
+                    ? (data as any).reply
+                    : 'Unexpected response from AI';
+
+            setMessages(prev => [...prev, { text: replyText, sender: 'bot', id: Date.now() }]);
+        } catch {
+            setMessages(prev => [...prev, { text: 'Error connecting to AI', sender: 'bot', id: Date.now() }]);
         }
     };
 

@@ -1,16 +1,15 @@
 import { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ChatPage from './pages/Chat/ChatPage';
 import './App.css';
 import Navbar from './components/Navbar/Navbar';
 
-
 function Home() {
   const [backendMsg, setBackendMsg] = useState<string | null>(null);
-
+  const PORT = import.meta.env.VITE_BACKEND_PORT || '8000';
   const testBackend = async () => {
     try {
-      const res = await fetch('http://localhost:8001/ping');
+      const res = await fetch(`http://localhost:${PORT}/ping`);
       const data = await res.json();
       setBackendMsg(data.message);
     } catch (err) {
