@@ -11,17 +11,31 @@ start_backend() {
     echo "backend/.env is missing. Create it with GROQ_API_KEY before starting."
     exit 1
   fi
-  echo "Installing backend deps..."
-  pip3 install -r requirements.txt
+  
+  if [ ! -d "venv" ]; then
+    echo "Creating python venv..."
+    python3 -m venv venv
+    source venv/bin/activate
+    echo "Installing backend deps..."
+    pip install -r requirements.txt
+  else
+    source venv/bin/activate
+    echo "Skipping backend install (venv exists)..."
+  fi
+
   echo "Starting backend on http://localhost:8000"
-  python3 -m uvicorn main:app --reload &
+  python -m uvicorn main:app --reload &
   BACKEND_PID=$!
 }
 
 start_frontend() {
   cd "$FRONTEND"
-  echo "Installing frontend deps..."
-  npm install
+  if [ ! -d "node_modules" ]; then
+    echo "Installing frontend deps..."
+    npm install
+  else
+    echo "Skipping frontend install (node_modules exists)..."
+  fi
   echo "Starting frontend on http://localhost:5173"
   npm run dev -- --host &
   FRONTEND_PID=$!
