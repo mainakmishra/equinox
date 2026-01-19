@@ -18,7 +18,7 @@ chmod +x startup.sh
 ./startup.sh
 ```
 
-The script installs backend/frontend dependencies and starts both servers (backend on 8000, frontend on 5173). Press Ctrl+C to stop.
+The script handles dependency installation automatically. On first run, it sets up a Python virtual environment and installs Node modules. On subsequent runs, it detects existing environment files and skips installation for faster startup. Both servers will start (backend on 8000, frontend on 5173). Press Ctrl+C to stop.
 
 ### Manual setup (optional)
 
