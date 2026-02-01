@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './SignedNavbar.css'; // This is correct, but ensure the file exists and is named correctly
+import './SignedNavbar.css'; 
 
 export default function SignedInNavbar({ onSignOut }: { onSignOut?: () => void }) {
     return (
@@ -10,7 +10,8 @@ export default function SignedInNavbar({ onSignOut }: { onSignOut?: () => void }
                 <Link className="navbar-link" to="/chat">Chat</Link>
                 <Link className="navbar-link" to="/agents">Agents</Link>
                 <Link className="navbar-link" to="/settings">Settings</Link>
-                <button className="navbar-link" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', font: 'inherit', padding: 0 }} onClick={onSignOut}>Sign Out</button>
+                <Link className="navbar-link" to="/notes">Notes</Link>
+                <button className="signout-btn" onClick={onSignOut}>Sign Out</button>
             </div>
         </nav>
     );

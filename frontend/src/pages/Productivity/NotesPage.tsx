@@ -1,0 +1,172 @@
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { fetchNotes, addNote, updateNote } from '../../api/notesApi';
+import './NotesPage.css';
+import SignedInNavbar from '../../components/Navbar/SignedInNavbar';
+
+interface Note {
+    id: string;
+    user_email: string;
+    title: string;
+    content: string;
+    source: string;
+    created_at?: string;
+    updated_at?: string;
+}
+
+export default function NotesPage() {
+    const user_email = localStorage.getItem('user_email') || '';
+    const [notes, setNotes] = useState<Note[]>([]);
+    const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const saveTimeoutRef = useRef<number | null>(null);
+
+    const handleSignOut = () => {
+        localStorage.removeItem('signedIn');
+        localStorage.removeItem('user_email');
+        window.location.href = '/';
+    };
+
+    // Fetch notes on mount
+    useEffect(() => {
+        if (!user_email) {
+            setError('No user email found');
+            setIsLoading(false);
+            return;
+        }
+
+        fetchNotes(user_email)
+            .then(data => {
+                setNotes(data);
+                if (data.length > 0) setSelectedNoteId(data[0].id);
+                setIsLoading(false);
+            })
+            .catch(err => {
+                console.error('Failed to fetch notes:', err);
+                setError('Failed to load notes');
+                setIsLoading(false);
+            });
+    }, [user_email]);
+
+    const selectedNote = notes.find(n => n.id === selectedNoteId);
+
+    const handleNewNote = async () => {
+        try {
+            const newNote = await addNote({
+                user_email,
+                title: '',
+                content: '',
+                source: 'user',
+            });
+            setNotes([newNote, ...notes]);
+            setSelectedNoteId(newNote.id);
+        } catch (err) {
+            console.error('Failed to create note:', err);
+            setError('Failed to create note');
+        }
+    };
+
+    // Debounced save function
+    const saveNote = useCallback(async (noteId: string, updates: Partial<Note>) => {
+        try {
+            // Assuming you have an updateNote API function
+            await updateNote(noteId, updates);
+        } catch (err) {
+            console.error('Failed to save note:', err);
+            setError('Failed to save changes');
+        }
+    }, []);
+
+    const updateSelectedNote = (field: keyof Note, value: string) => {
+        if (!selectedNoteId) return;
+
+        // Update local state immediately
+        setNotes(notes.map(n =>
+            n.id === selectedNoteId ? { ...n, [field]: value } : n
+        ));
+
+        // Clear existing timeout
+        if (saveTimeoutRef.current) {
+            clearTimeout(saveTimeoutRef.current);
+        }
+
+        // Set new timeout to save after 500ms of no typing
+        saveTimeoutRef.current = setTimeout(() => {
+            saveNote(selectedNoteId, { [field]: value });
+        }, 500);
+    };
+
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (saveTimeoutRef.current) {
+                clearTimeout(saveTimeoutRef.current);
+            }
+        };
+    }, []);
+
+    if (isLoading) {
+        return (
+            <>
+                <SignedInNavbar onSignOut={handleSignOut} />
+                <div className="notes-app">
+                    <div className="loading">Loading notes...</div>
+                </div>
+            </>
+        );
+    }
+
+    return (
+        <>
+            <SignedInNavbar onSignOut={handleSignOut} />
+            <div className="notes-app">
+                {error && (
+                    <div className="error-banner" onClick={() => setError(null)}>
+                        {error} (click to dismiss)
+                    </div>
+                )}
+                <div className="notes-layout">
+                    <aside className="notes-sidebar">
+                        {notes.length === 0 && <div className="empty">No Notes</div>}
+                        {notes.map(note => (
+                            <div
+                                key={note.id}
+                                className={`note-item ${note.id === selectedNoteId ? 'active' : ''}`}
+                                onClick={() => setSelectedNoteId(note.id)}
+                            >
+                                <div className="note-title">{note.title || 'Untitled'}</div>
+                                <div className="note-preview">
+                                    {note.content?.slice(0, 40) || 'No content'}
+                                </div>
+                            </div>
+                        ))}
+                        <div className="new-button">
+                            <button onClick={handleNewNote}>＋ New Note</button>
+                        </div>
+                    </aside>
+
+                    <main className="notes-editor">
+                        {selectedNote ? (
+                            <>
+                                <input
+                                    className="editor-title"
+                                    value={selectedNote.title}
+                                    onChange={e => updateSelectedNote('title', e.target.value)}
+                                    placeholder="Note title"
+                                />
+                                <textarea
+                                    className="editor-content"
+                                    value={selectedNote.content}
+                                    onChange={e => updateSelectedNote('content', e.target.value)}
+                                    placeholder="Start typing..."
+                                />
+                            </>
+                        ) : (
+                            <div className="editor-empty">Select or create a note</div>
+                        )}
+                    </main>
+                </div>
+            </div>
+        </>
+    );
+}

@@ -1,10 +1,12 @@
 
 import React, { useState, useRef, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import './ChatPage.css';
 import { sendChatMessage } from '../../api/chatApi';
 import SignedInNavbar from '../../components/Navbar/SignedInNavbar';
 
 export default function ChatInterface() {
+    const [searchParams] = useSearchParams();
     // Sign out handler for navbar
     const handleSignOut = () => {
         localStorage.removeItem('signedIn');
@@ -13,6 +15,14 @@ export default function ChatInterface() {
     const [messages, setMessages] = useState<{ text: string; sender: string; id: number }[]>([]);
     const [input, setInput] = useState('');
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+    // Store email from query param in localStorage
+    useEffect(() => {
+        const email = searchParams.get('email');
+        if (email) {
+            localStorage.setItem('user_email', email);
+        }
+    }, [searchParams]);
 
     // Auto-resize textarea
     useEffect(() => {

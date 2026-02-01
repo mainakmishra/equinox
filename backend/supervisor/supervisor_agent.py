@@ -1,4 +1,3 @@
-from agents.productivity_agent import ProductivityAgent
 
 class SupervisorAgent:
     """
@@ -10,5 +9,4 @@ class SupervisorAgent:
 
     def get_work_summary(self, tokens):
         """Chain: Supervisor → ProductivityAgent → Gmail Tool"""
-        ProductivityAgent_instance = ProductivityAgent()
-        return ProductivityAgent_instance.get_today_priorities(tokens)
+        pass

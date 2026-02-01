@@ -19,8 +19,16 @@ from supervisor.supervisor_agent import SupervisorAgent
 from state.user_tokens import get_user_tokens
 from tools.google_auth import router as google_auth_router, get_gmail_service, fetch_recent_emails
 
+from api.notes import router as notes_router
+from api.todos import router as todos_router
 # wellness agent api routes
 from api import api_router
+from api.profile import router as profile_router
+
+from api.notes import router as notes_router
+from api.todos import router as todos_router
+
+
 
 groq_api_key = os.getenv("GROQ_API_KEY")
 if not groq_api_key:
@@ -43,13 +51,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # wellness api routes
 app.include_router(api_router)
+
+# profile api routes (top-level, not under /api)
+app.include_router(profile_router)
 
 # google auth routes
 app.include_router(google_auth_router)
 
 
+app.include_router(notes_router)
+app.include_router(todos_router)
+
+app.include_router(notes_router)
+app.include_router(todos_router)
 class ChatRequest(BaseModel):
     message: str
 
@@ -101,3 +118,5 @@ async def chat(req: ChatRequest):
         return {"reply": reply}
     except Exception as e:
         return {"reply": f"Error: {str(e)}"}
+    
+
