@@ -1,4 +1,4 @@
-from agents.productivity.productivity_tools import ProductivityAgent
+
 class SupervisorAgent:
     """
     Supervisor Agent acts as a central brain, managing specialized sub-agents.
@@ -9,5 +9,4 @@ class SupervisorAgent:
 
     def get_work_summary(self, tokens):
         """Chain: Supervisor → ProductivityAgent → Gmail Tool"""
-        ProductivityAgent_instance = ProductivityAgent()
-        return ProductivityAgent_instance.get_today_priorities(tokens)
+        pass
