@@ -3,6 +3,7 @@
 
 from .connection import Base, engine, SessionLocal, get_db, test_connection
 from .models import (
+    Note,
     User,
     UserProfile,
     HealthLog,
@@ -11,7 +12,7 @@ from .models import (
     Streak,
     Achievement,
     AgentSignal,
-    WellnessForecast
+    WellnessForecast,
 )
 from .pinecone_db import (
     get_pinecone_index,
@@ -47,5 +48,6 @@ __all__ = [
     "delete_memory",
     "delete_user_memories",
     "test_pinecone_connection",
-    "MEMORY_TYPES"
+    "MEMORY_TYPES",
+    "Note"
 ]

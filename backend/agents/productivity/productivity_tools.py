@@ -1,6 +1,10 @@
-# productivity_agent.py
+# backend/agents/productivity_tools.py
+
 
 from tools import google_auth
+from api.notes import add_note
+from api.todos import add_todo
+from datetime import datetime
 
 class ProductivityAgent:
     def __init__(self):
@@ -22,3 +26,23 @@ class ProductivityAgent:
         emails = google_auth.fetch_recent_emails(service)
         # For demo, just return the email IDs
         return {"recent_emails": emails}
+    
+    def agent_add_note(user_email, title, content, user):
+        note = {
+         "user_email": user_email,
+         "title": title,
+         "content": content,
+         "created_at": datetime.utcnow(),
+         "user": user,
+         }
+        return add_note(note)
+
+    def agent_add_todo(user_email, text, due_date=None):
+        todo = {
+        "user_email": user_email,
+        "text": text,
+        "completed": False,
+        "due_date": due_date,
+        "created_at": datetime.utcnow()
+         }
+        return add_todo(todo)

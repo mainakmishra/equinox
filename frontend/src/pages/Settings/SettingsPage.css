@@ -1,49 +1,75 @@
-/* Prevent content from being hidden behind the fixed navbar */
-.settingspage-content {
-  margin-top: 80px;
-}
-/* Add to your styles.css */
-
-.settings-page {
+/* ===== Page Wrapper ===== */
+.settingspage {
   min-height: 100vh;
-  width: 100vw;
-  padding: 80px 2rem 4rem;
-  color: #e0e0e0;
+  width: 100%;
+  padding-top: 96px; /* navbar offset */
+  padding-bottom: 4rem;
+  background: linear-gradient(
+    180deg,
+    rgba(17, 17, 17, 0.95),
+    rgba(17, 17, 17, 1)
+  );
+  color: var(--foreground, #eaeaea);
 }
 
-.settings-header {
-  text-align: center;
-  margin-bottom: 4rem;
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
+/* ===== Section Containers ===== */
+.settingspage-content {
+  max-width: 960px;
+  margin: 0 auto 3.5rem auto;
+  padding: 2.5rem 3rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 20px;
+  backdrop-filter: blur(16px);
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
+/* ===== Section Titles ===== */
 .settingspage-title {
-  font-size: 3rem;
+  font-size: 2.4rem;
   font-weight: 800;
-  margin-bottom: 1rem;
+  margin-bottom: 1.75rem;
+  letter-spacing: -0.02em;
   background: linear-gradient(135deg, #ffffff, #a78bfa);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
-.settingspage-grid {
+/* ===== Profile Section ===== */
+.profile-section {
   display: flex;
-  flex-direction: column;
-  gap: 3rem;
-  max-width: 900px;
-  margin: 0 auto;
+  align-items: center;
+  gap: 2rem;
+  padding: 1.5rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
 }
 
+.profile-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+}
+
+.profile-section p {
+  margin: 0.35rem 0;
+  font-size: 1.05rem;
+  color: #e5e5e5;
+}
+
+.profile-section strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* ===== Apps List ===== */
 .apps-list {
-  max-width: 400px;
-  margin: 2rem auto;
-  padding: 1.5rem 1rem;
-  background: var(--secondary, #f5f5f5);
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  max-width: 420px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -53,52 +79,95 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+  padding: 1.1rem 1.25rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 6px 20px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.app-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 10px 30px rgba(0, 0, 0, 0.35);
 }
 
 .app-name {
+  font-size: 1.05rem;
   font-weight: 500;
-  color: var(--foreground, #222);
-  font-size: 1rem;
+  color: #f1f1f1;
 }
 
-/* Toggle Switch Styles */
+/* ===== Toggle Switch ===== */
 .switch {
   position: relative;
   display: inline-block;
-  width: 44px;
-  height: 24px;
+  width: 46px;
+  height: 26px;
 }
+
 .switch input {
   opacity: 0;
   width: 0;
   height: 0;
 }
+
 .slider {
   position: absolute;
+  inset: 0;
   cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: #ccc;
-  border-radius: 24px;
-  transition: background-color .4s;
+  background-color: rgba(255, 255, 255, 0.25);
+  border-radius: 26px;
+  transition: background-color 0.3s ease;
 }
+
 .switch input:checked + .slider {
   background-color: var(--accent, #4f8cff);
 }
-.slider:before {
-  position: absolute;
+
+.slider::before {
   content: "";
-  height: 18px;
-  width: 18px;
+  position: absolute;
+  height: 20px;
+  width: 20px;
   left: 3px;
   bottom: 3px;
-  background-color: white;
+  background-color: #ffffff;
   border-radius: 50%;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-  transition: transform .4s;
+  transition: transform 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
 }
-.switch input:checked + .slider:before {
+
+.switch input:checked + .slider::before {
   transform: translateX(20px);
+}
+
+/* ===== Loading / Error States ===== */
+.settingspage-content p {
+  font-size: 1rem;
+  color: #d4d4d4;
+}
+
+.settingspage-content p[style*="red"] {
+  color: #ff6b6b !important;
+  font-weight: 500;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 640px) {
+  .settingspage-content {
+    padding: 2rem 1.5rem;
+  }
+
+  .profile-section {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .settingspage-title {
+    font-size: 2rem;
+  }
 }

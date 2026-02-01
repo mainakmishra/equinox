@@ -3,7 +3,7 @@
 from datetime import date, time, datetime
 from decimal import Decimal
 from typing import Optional, List
-from uuid import UUID
+from uuid import UUID, uuid4
 import uuid
 
 from sqlalchemy import (
@@ -308,3 +308,16 @@ class WellnessForecast(Base):
     __table_args__ = (
         UniqueConstraint('user_id', 'forecast_date', name='uq_forecasts_user_date'),
     )
+
+class Note(Base):
+    """User notes - for journaling, thoughts, etc"""
+    __tablename__ = "notes"
+
+    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    user_email = Column(Text, nullable=False, index=True)
+    title = Column(Text, default='')
+    content = Column(Text, default='')
+    source = Column(Text, default='user')  # user/ai/import
+    
+    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
+    updated_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now())

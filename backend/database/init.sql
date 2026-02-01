@@ -309,3 +309,33 @@ INSERT INTO streaks (user_id, type, current_count, best_count) VALUES
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'high_readiness', 0, 0),
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'workout_completed', 0, 0)
 ON CONFLICT (user_id, type) DO NOTHING;
+
+-- ============================================
+-- TABLE: notes
+-- ============================================
+
+CREATE TABLE IF NOT EXISTS notes (
+    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_email          TEXT NOT NULL,
+    title               TEXT DEFAULT '',
+    content             TEXT DEFAULT '',
+    source              TEXT DEFAULT 'user',
+    
+    created_at          TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at          TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_notes_user_email ON notes(user_email);
+CREATE INDEX IF NOT EXISTS idx_notes_created_at ON notes(user_email, created_at DESC);
+
+-- Add auto-update trigger for updated_at
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+CREATE TRIGGER update_notes_updated_at BEFORE UPDATE ON notes
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

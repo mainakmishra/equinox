@@ -9,6 +9,7 @@ import SignedInNavbar from './components/Navbar/SignedInNavbar';
 import HomePage from './pages/Home/HomePage';
 import AgentsPage from './pages/Agents/AgentsPage';
 import SettingsPage from './pages/Settings/SettingsPage';
+import NotesPage from './pages/Productivity/NotesPage';
 
 function AppRoutes() {
   return (
@@ -17,11 +18,10 @@ function AppRoutes() {
       <Route path="/chat" element={<ChatPage />} />
       <Route path="/agents" element={<AgentsPage />} />
       <Route path="/settings" element={<SettingsPage />} />
+      <Route path="/notes" element={<NotesPage/>} />
     </Routes>
   );
 }
-
-
 
 
 function App() {

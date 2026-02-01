@@ -14,6 +14,12 @@ from .profile import (
     UserResponse
 )
 
+from .notes import (
+    NoteCreate,
+    NoteUpdate,
+    NoteResponse
+)
+
 __all__ = [
     # health
     "HealthLogCreate",
@@ -25,5 +31,8 @@ __all__ = [
     "UserProfileCreate",
     "UserProfileUpdate",
     "UserProfileResponse",
-    "UserResponse"
+    "UserResponse",
+    "NoteCreate",
+    "NoteUpdate",
+    "NoteResponse"
 ]

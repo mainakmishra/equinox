@@ -1,5 +1,4 @@
-from agents.productivity_agent import ProductivityAgent
-
+from agents.productivity.productivity_tools import ProductivityAgent
 class SupervisorAgent:
     """
     Supervisor Agent acts as a central brain, managing specialized sub-agents.
