@@ -122,6 +122,101 @@ html,
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+/* Markdown styling inside bot messages */
+.message.bot .message-bubble p {
+  margin: 0 0 0.75rem 0;
+}
+
+.message.bot .message-bubble p:last-child {
+  margin-bottom: 0;
+}
+
+.message.bot .message-bubble ul,
+.message.bot .message-bubble ol {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.message.bot .message-bubble li {
+  margin: 0.25rem 0;
+}
+
+.message.bot .message-bubble code {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'Fira Code', 'SF Mono', Monaco, Consolas, monospace;
+  font-size: 0.85em;
+  color: #a78bfa;
+}
+
+.message.bot .message-bubble pre {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 0.75rem 0;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.message.bot .message-bubble pre code {
+  background: none;
+  padding: 0;
+  color: #e0e0e0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.message.bot .message-bubble blockquote {
+  border-left: 3px solid rgba(139, 92, 246, 0.5);
+  padding-left: 1rem;
+  margin: 0.75rem 0;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.message.bot .message-bubble strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.message.bot .message-bubble em {
+  color: #a78bfa;
+}
+
+.message.bot .message-bubble a {
+  color: #8b5cf6;
+  text-decoration: underline;
+}
+
+.message.bot .message-bubble a:hover {
+  color: #a78bfa;
+}
+
+.message.bot .message-bubble table {
+  border-collapse: collapse;
+  margin: 0.75rem 0;
+  width: 100%;
+}
+
+.message.bot .message-bubble th,
+.message.bot .message-bubble td {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+
+.message.bot .message-bubble th {
+  background: rgba(139, 92, 246, 0.1);
+  font-weight: 600;
+}
+
+.message.bot .message-bubble hr {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin: 1rem 0;
+}
+
 /* Input Section - Claude Style */
 .input-section {
   position: sticky;

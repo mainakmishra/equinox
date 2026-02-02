@@ -4,6 +4,7 @@ import os
 from typing import Literal
 
 from langchain_groq import ChatGroq
+from opik.integrations.langchain import OpikTracer
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode
@@ -120,7 +121,8 @@ def chat_with_wellness_agent(user_id: str, message: str) -> str:
     }
     
     # run the graph
-    result = agent.invoke(initial_state)
+    opik_tracer = OpikTracer(project_name="equinox")
+    result = agent.invoke(initial_state, config={"callbacks": [opik_tracer]})
     
     # extract response
     last_message = result["messages"][-1]

@@ -5,6 +5,8 @@ import './ChatPage.css';
 import { User, Sparkles } from 'lucide-react';
 import { sendChatMessage, saveThread, getThread } from '../../api/chatApi';
 import SignedInNavbar from '../../components/Navbar/SignedInNavbar';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export default function ChatInterface() {
     const { email: routeEmail, threadId } = useParams();
@@ -27,19 +29,18 @@ export default function ChatInterface() {
         if (routeEmail && threadId) {
             localStorage.setItem('user_email', routeEmail);
 
-            // Load thread ONLY if messages are empty (first load)
-            if (messages.length === 0) {
-                const PORT = import.meta.env.REACT_APP_BACKEND_PORT || '8000';
-                getThread(routeEmail, threadId, PORT)
-                    .then(data => {
-                        if (data && data.messages) {
-                            setMessages(data.messages);
-                        }
-                    })
-                    .catch(() => {
-                        // Thread doesn't exist yet, that's fine
-                    });
-            }
+            // Load thread whenever threadId changes
+            const PORT = import.meta.env.REACT_APP_BACKEND_PORT || '8000';
+            setMessages([]); // Clear previous messages while loading
+            getThread(routeEmail, threadId, PORT)
+                .then(data => {
+                    if (data && data.messages) {
+                        setMessages(data.messages);
+                    }
+                })
+                .catch(() => {
+                    // Thread doesn't exist yet, that's fine
+                });
             return;
         }
 
@@ -83,7 +84,8 @@ export default function ChatInterface() {
         setInput('');
 
         try {
-            const data = await sendChatMessage(input, PORT, 'supervisor', effectiveEmail);
+            // Pass threadId if available
+            const data = await sendChatMessage(input, PORT, 'supervisor', effectiveEmail, threadId);
             // handle both wellness (response) and supervisor (summary) formats
             const replyText =
                 data?.response || data?.summary || data?.reply || 'Unexpected response from AI';
@@ -129,7 +131,13 @@ export default function ChatInterface() {
                                         {msg.sender === 'user' ? <User size={20} /> : <Sparkles size={20} />}
                                     </div>
                                     <div className="message-bubble">
-                                        {msg.text}
+                                        {msg.sender === 'bot' ? (
+                                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                {msg.text}
+                                            </ReactMarkdown>
+                                        ) : (
+                                            msg.text
+                                        )}
                                     </div>
                                 </div>
                             </div>

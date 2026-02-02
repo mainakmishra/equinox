@@ -32,3 +32,13 @@ export async function updateNote(noteId: string, updates: { title?: string; cont
   }
   return res.json();
 }
+
+export async function deleteNote(noteId: string) {
+  const res = await fetch(`http://localhost:8000/notes/${noteId}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) {
+    throw new Error(`Failed to delete note: ${res.status}`);
+  }
+  return;
+}

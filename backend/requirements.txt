@@ -22,3 +22,8 @@ email-validator
 
 # Utilities
 httpx
+opik
+
+# Google OAuth/API
+google-auth-oauthlib
+google-api-python-client
