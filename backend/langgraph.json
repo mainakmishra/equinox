@@ -1,0 +1,9 @@
+{
+    "dependencies": [
+        "."
+    ],
+    "graphs": {
+        "supervisor": "supervisor.graph:create_supervisor_graph"
+    },
+    "env": ".env"
+}
