@@ -15,7 +15,8 @@ from pydantic import BaseModel
 from groq import Groq
 
 # supervisor and productivity agents
-from supervisor.supervisor_agent import SupervisorAgent
+# from supervisor.supervisor_agent import SupervisorAgent # Removed
+
 from state.user_tokens import get_user_tokens
 from tools.google_auth import router as google_auth_router, get_gmail_service, fetch_recent_emails
 
@@ -65,10 +66,12 @@ app.include_router(google_auth_router)
 app.include_router(notes_router)
 app.include_router(todos_router)
 
-app.include_router(notes_router)
-app.include_router(todos_router)
+from api.history import router as history_router
+app.include_router(history_router)
+
 class ChatRequest(BaseModel):
     message: str
+    email: str | None = None
 
 
 @app.get("/ping")
@@ -77,13 +80,26 @@ def ping():
 
 
 @app.post("/supervisor")
-def supervisor_endpoint():
-    """trigger supervisor agent to get work summary"""
-    user_id = "demo_user"
-    tokens = get_user_tokens(user_id)
-    supervisor = SupervisorAgent()
-    summary = supervisor.get_work_summary(tokens)
-    return {"summary": summary}
+def supervisor_endpoint(req: ChatRequest):
+    """trigger supervisor agent to get work summary or handle request"""
+    # Note: Using ChatRequest which has 'message' field
+    user_id = req.email if req.email else "demo_user"
+    
+    from supervisor.supervisor_agent import get_supervisor_graph
+    from langchain_core.messages import HumanMessage
+    
+    supervisor = get_supervisor_graph()
+    
+    initial_state = {
+        "messages": [HumanMessage(content=req.message)],
+        "user_id": user_id,
+        "next": None
+    }
+    
+    result = supervisor.invoke(initial_state)
+    last_message = result["messages"][-1]
+    
+    return {"reply": last_message.content}
 
 
 @app.post("/chat")

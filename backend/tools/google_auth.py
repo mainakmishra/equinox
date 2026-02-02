@@ -94,7 +94,7 @@ def google_callback(request: Request, db: Session = Depends(get_db)):
         "scopes": credentials.scopes,
     }
 
-    save_user_tokens(str(user.id), tokens)
+    save_user_tokens(google_email, tokens)
 
     return RedirectResponse(
         f"http://localhost:5173/chat?email={google_email}"
