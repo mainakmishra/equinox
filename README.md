@@ -57,9 +57,9 @@ Create `backend/.env`:
 GROQ_API_KEY=your_groq_api_key
 DATABASE_URL=postgresql://user:pass@localhost:5432/equinox
 
-# Observability (Optional but recommended)
+# Observability 
 OPIK_API_KEY=your_opik_api_key
-OPIK_WORKSPACE=your_workspace
+OPIK_WORKSPACE=your_workspace (Optional but recommended)
 
 # Google OAuth (for email features)
 GOOGLE_CLIENT_ID=your_client_id
