@@ -23,6 +23,7 @@ SCOPES = [
     "https://www.googleapis.com/auth/gmail.readonly",
     "https://www.googleapis.com/auth/userinfo.email",
     "https://www.googleapis.com/auth/userinfo.profile",
+    "https://www.googleapis.com/auth/tasks",  # Google Tasks API
 ]
 
 
@@ -114,3 +115,89 @@ def fetch_recent_emails(service, max_results: int = 5):
     ).execute()
 
     return results.get("messages", [])
+
+
+def get_email_details(service, message_id: str) -> dict:
+    """Fetch full email content including subject, sender, and body"""
+    import base64
+    
+    msg = service.users().messages().get(
+        userId='me',
+        id=message_id,
+        format='full'
+    ).execute()
+    
+    headers = msg.get('payload', {}).get('headers', [])
+    
+    # Extract subject and sender from headers
+    subject = next((h['value'] for h in headers if h['name'].lower() == 'subject'), 'No Subject')
+    sender = next((h['value'] for h in headers if h['name'].lower() == 'from'), 'Unknown')
+    date = next((h['value'] for h in headers if h['name'].lower() == 'date'), '')
+    
+    # Extract body - handle different payload structures
+    body = ''
+    payload = msg.get('payload', {})
+    
+    if 'body' in payload and payload['body'].get('data'):
+        body = base64.urlsafe_b64decode(payload['body']['data']).decode('utf-8', errors='ignore')
+    elif 'parts' in payload:
+        for part in payload['parts']:
+            if part.get('mimeType') == 'text/plain' and part.get('body', {}).get('data'):
+                body = base64.urlsafe_b64decode(part['body']['data']).decode('utf-8', errors='ignore')
+                break
+    
+    return {
+        'id': message_id,
+        'subject': subject,
+        'sender': sender,
+        'date': date,
+        'snippet': msg.get('snippet', ''),
+        'body': body[:1000] if body else msg.get('snippet', '')  # Limit body size
+    }
+
+
+# ---------- Google Tasks utilities ----------
+
+def get_tasks_service(tokens: dict):
+    """Get Google Tasks API service"""
+    creds = Credentials(**tokens)
+    return build("tasks", "v1", credentials=creds)
+
+
+def fetch_task_lists(service):
+    """Get all task lists"""
+    results = service.tasklists().list().execute()
+    return results.get('items', [])
+
+
+def fetch_tasks(service, tasklist_id: str = '@default'):
+    """Get all tasks from a task list"""
+    results = service.tasks().list(tasklist=tasklist_id).execute()
+    return results.get('items', [])
+
+
+def create_task(service, title: str, notes: str = None, due: str = None, tasklist_id: str = '@default'):
+    """Create a new task in Google Tasks
+    
+    Args:
+        service: Google Tasks service
+        title: Task title
+        notes: Optional task notes/description
+        due: Optional due date in RFC 3339 format (e.g., '2026-02-03T00:00:00.000Z')
+        tasklist_id: Task list ID, defaults to '@default'
+    """
+    task = {'title': title}
+    if notes:
+        task['notes'] = notes
+    if due:
+        task['due'] = due
+    
+    return service.tasks().insert(tasklist=tasklist_id, body=task).execute()
+
+
+def complete_task(service, task_id: str, tasklist_id: str = '@default'):
+    """Mark a task as completed"""
+    task = service.tasks().get(tasklist=tasklist_id, task=task_id).execute()
+    task['status'] = 'completed'
+    return service.tasks().update(tasklist=tasklist_id, task=task_id, body=task).execute()
+
