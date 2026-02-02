@@ -309,6 +309,7 @@ class WellnessForecast(Base):
         UniqueConstraint('user_id', 'forecast_date', name='uq_forecasts_user_date'),
     )
 
+
 class Note(Base):
     """User notes - for journaling, thoughts, etc"""
     __tablename__ = "notes"
@@ -318,6 +319,20 @@ class Note(Base):
     title = Column(Text, default='')
     content = Column(Text, default='')
     source = Column(Text, default='user')  # user/ai/import
+    
+    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
+    updated_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now())
+
+
+class Todo(Base):
+    """User todos/tasks"""
+    __tablename__ = "todos"
+
+    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    user_email = Column(Text, nullable=False, index=True)
+    text = Column(Text, nullable=False)
+    completed = Column(Boolean, default=False)
+    due_date = Column(Date, nullable=True)
     
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
     updated_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now())
@@ -333,3 +348,4 @@ class ChatThread(Base):
     messages = Column(JSONB, default=[])
     
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
+

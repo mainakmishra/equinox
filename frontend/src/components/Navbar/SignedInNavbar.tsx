@@ -11,6 +11,7 @@ export default function SignedInNavbar({ onSignOut }: { onSignOut?: () => void }
                 <Link className="navbar-link" to="/wellness">Wellness</Link>
                 <Link className="navbar-link" to="/settings">Settings</Link>
                 <Link className="navbar-link" to="/notes">Notes</Link>
+                <Link className="navbar-link" to="/todos">Todos</Link>
                 <button className="signout-btn" onClick={onSignOut}>Sign Out</button>
             </div>
         </nav>

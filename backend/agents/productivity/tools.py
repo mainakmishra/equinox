@@ -114,14 +114,33 @@ def fetch_todos(user_email: str) -> dict:
     """
     Fetch all todos for a specific user.
     """
-    todos = get_todos_service(user_email)
-    return {"todos": [t.dict() for t in todos]}
+    session = SessionLocal()
+    try:
+        todos = get_todos_service(session, user_email)
+        # Convert Pydantic/SQLAlchemy objects to dicts
+        # If todos are SQLAlchemy models, we need manual conversion or use Pydantic models if returned as such.
+        # The service returns SQLAlchemy models with .id stringified.
+        todos_list = []
+        for t in todos:
+             todos_list.append({
+                 "id": str(t.id),
+                 "text": t.text,
+                 "completed": t.completed,
+                 "due_date": t.due_date.isoformat() if t.due_date else None,
+                 "created_at": t.created_at.isoformat() if t.created_at else None
+             })
+        return {"todos": todos_list}
+    except Exception as e:
+        return {"error": str(e)}
+    finally:
+        session.close()
 
 @tool
 def create_todo(user_email: str, text: str, due_date: Optional[str] = None) -> dict:
     """
     Create a new todo item.
     """
+    session = SessionLocal()
     try:
         parsed_date = None
         if due_date:
@@ -130,21 +149,29 @@ def create_todo(user_email: str, text: str, due_date: Optional[str] = None) -> d
             except ValueError:
                 return {"error": "Invalid date format. Use YYYY-MM-DD."}
 
-        new_todo = create_todo_service(user_email, text, parsed_date)
-        return {"status": "success", "todo_id": new_todo.id, "message": f"Todo '{text}' created."}
+        new_todo = create_todo_service(session, user_email, text, parsed_date)
+        return {"status": "success", "todo_id": str(new_todo.id), "message": f"Todo '{text}' created."}
     except Exception as e:
         return {"error": str(e)}
+    finally:
+        session.close()
 
 @tool
 def delete_todo(todo_id: str) -> dict:
     """
     Delete a todo by its ID.
     """
-    success = delete_todo_service(todo_id)
-    if success:
-        return {"status": "success", "message": "Todo deleted."}
-    else:
-        return {"error": "Todo not found."}
+    session = SessionLocal()
+    try:
+        success = delete_todo_service(session, todo_id)
+        if success:
+            return {"status": "success", "message": "Todo deleted."}
+        else:
+            return {"error": "Todo not found."}
+    except Exception as e:
+        return {"error": str(e)}
+    finally:
+        session.close()
 
 
 PRODUCTIVITY_TOOLS = [fetch_recent_emails, fetch_notes, create_note, delete_note, fetch_todos, create_todo, delete_todo]
