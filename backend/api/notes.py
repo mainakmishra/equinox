@@ -11,35 +11,75 @@ from schemas.notes import NoteCreate, NoteUpdate, NoteResponse
 router = APIRouter(prefix="/notes", tags=["notes"])
 
 
-@router.post("/", response_model=NoteResponse, status_code=201)
-def create_note(note_data: NoteCreate, db: Session = Depends(get_db)):
-    """Create a new note"""
+
+# Service Functions (for Agent Use)
+def create_note_service(db: Session, user_email: str, title: str, content: str, source: str = "user"):
     note = Note(
-        user_email=note_data.user_email,
-        title=note_data.title,
-        content=note_data.content,
-        source=note_data.source
+        user_email=user_email,
+        title=title,
+        content=content,
+        source=source
     )
     db.add(note)
     db.commit()
     db.refresh(note)
     return note
 
+def get_user_notes_service(db: Session, user_email: str):
+    return db.query(Note)\
+        .filter(Note.user_email == user_email)\
+        .order_by(Note.created_at.desc())\
+        .all()
+
+def get_note_service(db: Session, note_id: UUID):
+    return db.query(Note).filter(Note.id == note_id).first()
+
+def update_note_service(db: Session, note_id: UUID, title: str | None = None, content: str | None = None):
+    note = get_note_service(db, note_id)
+    if not note:
+        return None
+    
+    if title is not None:
+        note.title = title
+    if content is not None:
+        note.content = content
+    
+    db.commit()
+    db.refresh(note)
+    return note
+
+def delete_note_service(db: Session, note_id: UUID):
+    note = get_note_service(db, note_id)
+    if not note:
+        return False
+    
+    db.delete(note)
+    db.commit()
+    return True
+
+# Route Handlers
+@router.post("/", response_model=NoteResponse, status_code=201)
+def create_note(note_data: NoteCreate, db: Session = Depends(get_db)):
+    """Create a new note"""
+    return create_note_service(
+        db, 
+        note_data.user_email, 
+        note_data.title, 
+        note_data.content, 
+        note_data.source
+    )
+
 
 @router.get("/{user_email}", response_model=List[NoteResponse])
 def get_user_notes(user_email: str, db: Session = Depends(get_db)):
     """Get all notes for a user, ordered by most recent first"""
-    notes = db.query(Note)\
-        .filter(Note.user_email == user_email)\
-        .order_by(Note.created_at.desc())\
-        .all()
-    return notes
+    return get_user_notes_service(db, user_email)
 
 
 @router.get("/note/{note_id}", response_model=NoteResponse)
 def get_note(note_id: UUID, db: Session = Depends(get_db)):
     """Get a specific note by ID"""
-    note = db.query(Note).filter(Note.id == note_id).first()
+    note = get_note_service(db, note_id)
     if not note:
         raise HTTPException(status_code=404, detail="Note not found")
     return note
@@ -48,28 +88,16 @@ def get_note(note_id: UUID, db: Session = Depends(get_db)):
 @router.patch("/{note_id}", response_model=NoteResponse)
 def update_note(note_id: UUID, update_data: NoteUpdate, db: Session = Depends(get_db)):
     """Update a note's title and/or content"""
-    note = db.query(Note).filter(Note.id == note_id).first()
+    note = update_note_service(db, note_id, update_data.title, update_data.content)
     if not note:
         raise HTTPException(status_code=404, detail="Note not found")
-    
-    # Update only provided fields
-    if update_data.title is not None:
-        note.title = update_data.title
-    if update_data.content is not None:
-        note.content = update_data.content
-    
-    db.commit()
-    db.refresh(note)
     return note
 
 
 @router.delete("/{note_id}", status_code=204)
 def delete_note(note_id: UUID, db: Session = Depends(get_db)):
     """Delete a note"""
-    note = db.query(Note).filter(Note.id == note_id).first()
-    if not note:
+    success = delete_note_service(db, note_id)
+    if not success:
         raise HTTPException(status_code=404, detail="Note not found")
-    
-    db.delete(note)
-    db.commit()
     return None
