@@ -4,7 +4,9 @@
   box-sizing: border-box;
 }
 
-body, html, #root {
+body,
+html,
+#root {
   width: 100%;
   height: 100%;
   margin: 0;
@@ -196,6 +198,7 @@ body, html, #root {
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s;
+  z-index: 10;
 }
 
 .send-button:hover:not(:disabled) {
@@ -207,6 +210,13 @@ body, html, #root {
   opacity: 0.4;
   cursor: not-allowed;
   background: rgba(139, 92, 246, 0.3);
+}
+
+.send-button svg {
+  flex-shrink: 0;
+  min-width: 20px;
+  width: 20px;
+  height: 20px;
 }
 
 /* Input Footer */

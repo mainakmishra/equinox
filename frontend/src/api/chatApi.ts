@@ -5,7 +5,8 @@ export type AgentType = 'wellness' | 'productivity' | 'supervisor';
 export async function sendChatMessage(
     message: string,
     port: string = '8000',
-    agent: AgentType = 'wellness'
+    agent: AgentType = 'supervisor',
+    email?: string | null
 ): Promise<any> {
     // each agent has its own endpoint
     const endpoints: Record<AgentType, string> = {
@@ -19,7 +20,7 @@ export async function sendChatMessage(
     const res = await fetch(`http://localhost:${port}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message })
+        body: JSON.stringify({ message, email })
     });
 
     if (!res.ok) {

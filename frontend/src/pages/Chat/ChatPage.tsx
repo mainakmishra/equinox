@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import './ChatPage.css';
+import { User, Sparkles } from 'lucide-react';
 import { sendChatMessage } from '../../api/chatApi';
 import SignedInNavbar from '../../components/Navbar/SignedInNavbar';
 
@@ -40,7 +41,8 @@ export default function ChatInterface() {
         setInput('');
 
         try {
-            const data = await sendChatMessage(input, PORT);
+            const email = localStorage.getItem('user_email');
+            const data = await sendChatMessage(input, PORT, 'supervisor', email);
             // handle both wellness (response) and supervisor (summary) formats
             const replyText =
                 data?.response || data?.summary || data?.reply || 'Unexpected response from AI';
@@ -74,7 +76,7 @@ export default function ChatInterface() {
                             <div key={msg.id} className={`message ${msg.sender}`}>
                                 <div className="message-content">
                                     <div className="message-avatar">
-                                        {msg.sender === 'user' ? '👤' : '🤖'}
+                                        {msg.sender === 'user' ? <User size={20} /> : <Sparkles size={20} />}
                                     </div>
                                     <div className="message-bubble">
                                         {msg.text}
@@ -101,8 +103,16 @@ export default function ChatInterface() {
                             className="send-button"
                             disabled={!input.trim()}
                         >
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+                            <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="white"
+                                strokeWidth="2"
+                                style={{ zIndex: 20, position: 'relative', display: 'block' }}
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
                             </svg>
                         </button>
                     </div>
