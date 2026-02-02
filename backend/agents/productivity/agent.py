@@ -15,15 +15,18 @@ SYSTEM_PROMPT = """You are a helpful productivity assistant named Equinox Work.
 
 Your job is to help users manage their tasks, emails, and notes.
 You have access to tools that can:
-- Fetch recent emails
-- Create notes
-- Create todo items
+- Fetch and summarize emails (use get_email_summary for summaries)
+- Create and view notes
+- Create and view todo items (local todos)
+- Access Google Tasks (get_google_tasks, create_google_task)
 
 Guidelines:
 1. Be efficient and professional.
-2. If a user asks to summarize emails, fetch them first.
-3. If a user wants to remember something, suggest creating a note or todo.
-4. Always check for necessary information (like title for a note) before calling a tool.
+2. When user asks about "tasks" or "what I need to do", check BOTH get_google_tasks AND fetch_todos - show results from both.
+3. If a user asks to summarize emails, use get_email_summary tool.
+4. If a user wants to remember something, suggest creating a note or todo.
+5. Always check for necessary information (like title for a note) before calling a tool.
+6. When creating tasks, ask if they want it in Google Tasks or local todos.
 """
 
 def create_productivity_agent():
@@ -79,3 +82,28 @@ def get_productivity_agent():
     if _productivity_agent is None:
         _productivity_agent = create_productivity_agent()
     return _productivity_agent
+
+
+def chat_with_productivity_agent(user_id: str, message: str) -> str:
+    """
+    Send a message to the productivity agent and get response
+    
+    Args:
+        user_id: The user's identifier (email or uuid)
+        message: Their message
+    
+    Returns:
+        The agent's response text
+    """
+    agent = get_productivity_agent()
+    
+    initial_state = {
+        "messages": [HumanMessage(content=message)],
+        "user_id": user_id
+    }
+    
+    result = agent.invoke(initial_state)
+    
+    last_message = result["messages"][-1]
+    return last_message.content
+

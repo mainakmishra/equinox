@@ -6,7 +6,8 @@ from langchain_core.tools import tool
 
 from database import SessionLocal, HealthLog, UserProfile
 
-# hardcoded for now - will get from auth later
+# TODO: Replace hardcoded user ID with actual authenticated user
+# For demo, using test user. In production, get user_id from auth/session
 TEST_USER_ID = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
 
 
