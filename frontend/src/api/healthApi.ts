@@ -1,7 +1,7 @@
 // src/api/healthApi.ts
 // API client for wellness agent health logging
 
-const API_BASE = 'http://localhost:8000/api/health';
+const API_BASE = `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/health`;
 
 export interface HealthLogInput {
     sleep_hours: number;

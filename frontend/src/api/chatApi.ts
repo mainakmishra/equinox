@@ -1,10 +1,11 @@
 // chat api - supports multiple agents
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export type AgentType = 'wellness' | 'productivity' | 'supervisor';
 
 export async function sendChatMessage(
     message: string,
-    port: string = '8000',
+    _port: string = '8000', // kept for backwards compatibility
     agent: AgentType = 'supervisor',
     email?: string | null,
     threadId?: string | null
@@ -12,13 +13,13 @@ export async function sendChatMessage(
     // each agent has its own endpoint
     const endpoints: Record<AgentType, string> = {
         wellness: '/api/chat/wellness',
-        productivity: '/supervisor',  // abhyajit's endpoint
+        productivity: '/supervisor',
         supervisor: '/supervisor'
     };
 
     const endpoint = endpoints[agent] || endpoints.wellness;
 
-    const res = await fetch(`http://localhost:${port}${endpoint}`, {
+    const res = await fetch(`${API_URL}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message, email, thread_id: threadId })
@@ -36,9 +37,9 @@ export async function saveThread(
     threadId: string,
     messages: { text: string; sender: string; id: number }[],
     title: string = "New Conversation",
-    port: string = '8000'
+    _port: string = '8000'
 ): Promise<any> {
-    const res = await fetch(`http://localhost:${port}/api/history/${email}/${threadId}`, {
+    const res = await fetch(`${API_URL}/api/history/${email}/${threadId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -56,9 +57,9 @@ export async function saveThread(
 export async function getThread(
     email: string,
     threadId: string,
-    port: string = '8000'
+    _port: string = '8000'
 ): Promise<any> {
-    const res = await fetch(`http://localhost:${port}/api/history/${email}/${threadId}`);
+    const res = await fetch(`${API_URL}/api/history/${email}/${threadId}`);
     if (!res.ok) {
         throw new Error('Thread not found');
     }
