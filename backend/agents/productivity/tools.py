@@ -18,7 +18,8 @@ from api.notes import (
 from api.todos import (
     create_todo_service, 
     get_todos_service, 
-    delete_todo_service
+    delete_todo_service,
+    update_todo_service
 )
 
 from tools import google_auth
@@ -173,6 +174,37 @@ def delete_todo(todo_id: str) -> dict:
     finally:
         session.close()
 
+@tool
+def update_todo(todo_id: str, completed: Optional[bool] = None, text: Optional[str] = None) -> dict:
+    """
+    Update a todo item. Can mark as complete/incomplete or update the text.
+    Args:
+        todo_id: The ID of the todo to update
+        completed: Set to True to mark as complete, False to mark as incomplete
+        text: Optional new text for the todo
+    """
+    from api.todos import TodoUpdate
+    session = SessionLocal()
+    try:
+        updates = TodoUpdate(completed=completed, text=text)
+        updated = update_todo_service(session, todo_id, updates)
+        if updated:
+            return {
+                "status": "success", 
+                "message": f"Todo updated. Completed: {updated.completed}",
+                "todo": {
+                    "id": str(updated.id),
+                    "text": updated.text,
+                    "completed": updated.completed
+                }
+            }
+        else:
+            return {"error": "Todo not found."}
+    except Exception as e:
+        return {"error": str(e)}
+    finally:
+        session.close()
+
 
 
 
@@ -301,6 +333,7 @@ PRODUCTIVITY_TOOLS = [
     delete_note,
     fetch_todos,
     create_todo,
+    update_todo,
     delete_todo,
     get_google_tasks,
     create_google_task,
