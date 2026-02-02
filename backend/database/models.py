@@ -321,3 +321,15 @@ class Note(Base):
     
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
     updated_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now())
+
+
+class ChatThread(Base):
+    """Archived chat threads"""
+    __tablename__ = "chat_threads"
+
+    id = Column(Text, primary_key=True)  # custom hash: email_timestamp
+    user_email = Column(Text, nullable=False, index=True)
+    title = Column(Text, default="New Conversation")
+    messages = Column(JSONB, default=[])
+    
+    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())

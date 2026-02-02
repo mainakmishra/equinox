@@ -1,29 +1,65 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useParams, useNavigate } from 'react-router-dom';
 import './ChatPage.css';
 import { User, Sparkles } from 'lucide-react';
-import { sendChatMessage } from '../../api/chatApi';
+import { sendChatMessage, saveThread, getThread } from '../../api/chatApi';
 import SignedInNavbar from '../../components/Navbar/SignedInNavbar';
 
 export default function ChatInterface() {
+    const { email: routeEmail, threadId } = useParams();
     const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
+
     // Sign out handler for navbar
     const handleSignOut = () => {
         localStorage.removeItem('signedIn');
         window.location.href = '/';
     };
+
     const [messages, setMessages] = useState<{ text: string; sender: string; id: number }[]>([]);
     const [input, setInput] = useState('');
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    // Store email from query param in localStorage
+    // Initial setup: Redirect to /chat/:email/:threadId if params missing
     useEffect(() => {
-        const email = searchParams.get('email');
-        if (email) {
-            localStorage.setItem('user_email', email);
+        // If we have both, ensures local storage is synced
+        if (routeEmail && threadId) {
+            localStorage.setItem('user_email', routeEmail);
+
+            // Load thread ONLY if messages are empty (first load)
+            if (messages.length === 0) {
+                const PORT = import.meta.env.REACT_APP_BACKEND_PORT || '8000';
+                getThread(routeEmail, threadId, PORT)
+                    .then(data => {
+                        if (data && data.messages) {
+                            setMessages(data.messages);
+                        }
+                    })
+                    .catch(() => {
+                        // Thread doesn't exist yet, that's fine
+                    });
+            }
+            return;
         }
-    }, [searchParams]);
+
+        // If missing params, derive and redirect
+        const storedEmail = localStorage.getItem('user_email');
+        const queryEmail = searchParams.get('email');
+        const effectiveEmail = routeEmail || queryEmail || storedEmail;
+
+        if (effectiveEmail) {
+            // If email exists but threadId missing, create one and redirect
+            if (!threadId) {
+                // Generate a simple thread ID (timestamp + random) or just timestamp
+                const newThreadId = `t_${Date.now()}`;
+                navigate(`/chat/${effectiveEmail}/${newThreadId}`, { replace: true });
+            }
+        } else {
+            // No email found at all?? Maybe redirect home or stay here (empty state)
+            // For now, let's just wait for user to sign in
+        }
+    }, [routeEmail, threadId, navigate, searchParams]);
 
     // Auto-resize textarea
     useEffect(() => {
@@ -36,20 +72,34 @@ export default function ChatInterface() {
     const handleSubmit = async () => {
         if (!input.trim()) return;
         const PORT = import.meta.env.REACT_APP_BACKEND_PORT || '8000';
+
+        // Use params or fallback
+        const effectiveEmail = routeEmail || localStorage.getItem('user_email');
+
         const userMsg = { text: input, sender: 'user', id: Date.now() };
-        setMessages(prev => [...prev, userMsg]);
+        // Optimistic update
+        const updatedMessages = [...messages, userMsg];
+        setMessages(updatedMessages);
         setInput('');
 
         try {
-            const email = localStorage.getItem('user_email');
-            const data = await sendChatMessage(input, PORT, 'supervisor', email);
+            const data = await sendChatMessage(input, PORT, 'supervisor', effectiveEmail);
             // handle both wellness (response) and supervisor (summary) formats
             const replyText =
                 data?.response || data?.summary || data?.reply || 'Unexpected response from AI';
 
-            setMessages(prev => [...prev, { text: replyText, sender: 'bot', id: Date.now() }]);
+            const botMsg = { text: replyText, sender: 'bot', id: Date.now() + 1 };
+            const finalMessages = [...updatedMessages, botMsg];
+
+            setMessages(finalMessages);
+
+            // Persist thread
+            if (effectiveEmail && threadId) {
+                saveThread(effectiveEmail, threadId, finalMessages, "Conversation", PORT);
+            }
         } catch {
-            setMessages(prev => [...prev, { text: 'Error connecting to AI', sender: 'bot', id: Date.now() }]);
+            const errorMsg = { text: 'Error connecting to AI', sender: 'bot', id: Date.now() + 1 };
+            setMessages(prev => [...prev, errorMsg]);
         }
     };
 

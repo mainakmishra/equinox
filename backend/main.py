@@ -66,8 +66,9 @@ app.include_router(google_auth_router)
 app.include_router(notes_router)
 app.include_router(todos_router)
 
-app.include_router(notes_router)
-app.include_router(todos_router)
+from api.history import router as history_router
+app.include_router(history_router)
+
 class ChatRequest(BaseModel):
     message: str
     email: str | None = None
