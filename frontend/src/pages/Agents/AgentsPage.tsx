@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './AgentsPage.css';
 import { ProductivityAgent } from './ProductivityAgent/ProductivityAgent';
 import { WellnessAgent } from './WellnessAgent/WellnessAgent';

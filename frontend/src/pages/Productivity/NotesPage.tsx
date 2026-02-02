@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { fetchNotes, addNote, updateNote } from '../../api/notesApi';
 import './NotesPage.css';
 import SignedInNavbar from '../../components/Navbar/SignedInNavbar';
