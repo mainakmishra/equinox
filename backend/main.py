@@ -69,6 +69,9 @@ app.include_router(todos_router)
 from api.history import router as history_router
 app.include_router(history_router)
 
+from api.emails import router as emails_router
+app.include_router(emails_router)
+
 class ChatRequest(BaseModel):
     message: str
     email: str | None = None

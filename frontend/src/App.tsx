@@ -7,6 +7,7 @@ import HomePage from './pages/Home/HomePage';
 import AgentsPage from './pages/Agents/AgentsPage';
 import SettingsPage from './pages/Settings/SettingsPage';
 import NotesPage from './pages/Productivity/NotesPage';
+import TodosPage from './pages/Productivity/TodosPage';
 import WellnessPage from './pages/Wellness/WellnessPage';
 import HealthLogPopup from './components/HealthLogPopup/HealthLogPopup';
 import { getTodayHealth } from './api/healthApi';
@@ -56,6 +57,7 @@ function AppRoutes() {
         <Route path="/agents" element={<AgentsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/notes" element={<NotesPage />} />
+        <Route path="/todos" element={<TodosPage />} />
         <Route path="/wellness" element={<WellnessPage />} />
       </Routes>
 
