@@ -152,7 +152,14 @@ def get_wellness_trends(days: int = 7) -> dict:
 
 @tool
 def suggest_activity(readiness_zone: str) -> dict:
-    """suggest activities based on readiness zone (peak/good/moderate/low/critical)"""
+    """Suggest activities based on readiness zone.
+    
+    IMPORTANT: You MUST call get_readiness_score() first to get the user's actual zone.
+    Do NOT guess or make up the zone - use the real 'zone' value from get_readiness_score().
+    
+    Args:
+        readiness_zone: one of 'peak', 'good', 'moderate', 'low', 'critical'
+    """
     
     suggestions = {
         "peak": {
