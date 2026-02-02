@@ -8,6 +8,24 @@ import SignedInNavbar from '../../components/Navbar/SignedInNavbar';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
+// Typing indicator component
+const TypingIndicator = () => (
+    <div className="message bot">
+        <div className="message-content">
+            <div className="message-avatar">
+                <Sparkles size={20} />
+            </div>
+            <div className="message-bubble typing-bubble">
+                <div className="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+);
+
 export default function ChatInterface() {
     const { email: routeEmail, threadId } = useParams();
     const [searchParams] = useSearchParams();
@@ -21,7 +39,10 @@ export default function ChatInterface() {
 
     const [messages, setMessages] = useState<{ text: string; sender: string; id: number }[]>([]);
     const [input, setInput] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+    const messagesContainerRef = useRef<HTMLDivElement>(null);
 
     // Initial setup: Redirect to /chat/:email/:threadId if params missing
     useEffect(() => {
@@ -70,6 +91,15 @@ export default function ChatInterface() {
         }
     }, [input]);
 
+    // Auto-scroll to bottom when messages change or loading state changes
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages, isLoading]);
+
     const handleSubmit = async () => {
         if (!input.trim()) return;
         const PORT = import.meta.env.REACT_APP_BACKEND_PORT || '8000';
@@ -82,6 +112,7 @@ export default function ChatInterface() {
         const updatedMessages = [...messages, userMsg];
         setMessages(updatedMessages);
         setInput('');
+        setIsLoading(true);
 
         try {
             // Pass threadId if available
@@ -102,6 +133,8 @@ export default function ChatInterface() {
         } catch {
             const errorMsg = { text: 'Error connecting to AI', sender: 'bot', id: Date.now() + 1 };
             setMessages(prev => [...prev, errorMsg]);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -116,32 +149,43 @@ export default function ChatInterface() {
         <>
             <SignedInNavbar onSignOut={handleSignOut} />
             <div className="chat-container">
-                <div className="messages-container">
-                    {messages.length === 0 ? (
+                <div className="messages-container" ref={messagesContainerRef}>
+                    {messages.length === 0 && !isLoading ? (
                         <div className="empty-state">
-                            <div className="empty-icon">💬</div>
+                            <div className="empty-icon-wrapper">
+                                <Sparkles size={48} className="empty-sparkle" />
+                            </div>
                             <h2>How can I help you today?</h2>
                             <p>Start a conversation by typing a message below</p>
+                            <div className="suggestion-chips">
+                                <button className="suggestion-chip" onClick={() => setInput('Summarize my emails')}>📧 Summarize my emails</button>
+                                <button className="suggestion-chip" onClick={() => setInput('How is my wellness today?')}>💪 Check my wellness</button>
+                                <button className="suggestion-chip" onClick={() => setInput('What tasks do I have?')}>📋 Show my tasks</button>
+                            </div>
                         </div>
                     ) : (
-                        messages.map((msg) => (
-                            <div key={msg.id} className={`message ${msg.sender}`}>
-                                <div className="message-content">
-                                    <div className="message-avatar">
-                                        {msg.sender === 'user' ? <User size={20} /> : <Sparkles size={20} />}
-                                    </div>
-                                    <div className="message-bubble">
-                                        {msg.sender === 'bot' ? (
-                                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                                {msg.text}
-                                            </ReactMarkdown>
-                                        ) : (
-                                            msg.text
-                                        )}
+                        <>
+                            {messages.map((msg) => (
+                                <div key={msg.id} className={`message ${msg.sender}`}>
+                                    <div className="message-content">
+                                        <div className="message-avatar">
+                                            {msg.sender === 'user' ? <User size={20} /> : <Sparkles size={20} />}
+                                        </div>
+                                        <div className="message-bubble">
+                                            {msg.sender === 'bot' ? (
+                                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                    {msg.text}
+                                                </ReactMarkdown>
+                                            ) : (
+                                                msg.text
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))
+                            ))}
+                            {isLoading && <TypingIndicator />}
+                            <div ref={messagesEndRef} />
+                        </>
                     )}
                 </div>
 
@@ -159,7 +203,7 @@ export default function ChatInterface() {
                         <button
                             onClick={handleSubmit}
                             className="send-button"
-                            disabled={!input.trim()}
+                            disabled={!input.trim() || isLoading}
                         >
                             <svg
                                 width="20"
