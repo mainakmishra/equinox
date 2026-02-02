@@ -244,6 +244,7 @@ def get_email_summary(user_id: str) -> dict:
     """
     import os
     from langchain_groq import ChatGroq
+    from opik.integrations.langchain import OpikTracer
     from state.user_tokens import get_user_tokens, user_tokens_store
     
     tokens = get_user_tokens(user_id)
@@ -285,7 +286,7 @@ Emails:
 
 Brief summary:"""
 
-        response = llm.invoke(prompt)
+        response = llm.invoke(prompt, config={"callbacks": [OpikTracer(project_name="equinox")]})
         
         return {"summary": response.content, "email_count": len(emails)}
     except Exception as e:

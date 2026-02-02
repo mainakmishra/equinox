@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { fetchNotes, addNote, updateNote } from '../../api/notesApi';
+import { fetchNotes, addNote, updateNote, deleteNote } from '../../api/notesApi';
+import { Trash2 } from 'lucide-react';
 import './NotesPage.css';
 import SignedInNavbar from '../../components/Navbar/SignedInNavbar';
 
@@ -77,6 +78,23 @@ export default function NotesPage() {
         }
     }, []);
 
+    const handleDeleteNote = async (e: React.MouseEvent, noteId: string) => {
+        e.stopPropagation();
+        if (!window.confirm('Are you sure you want to delete this note?')) return;
+
+        try {
+            await deleteNote(noteId);
+            const updatedNotes = notes.filter(n => n.id !== noteId);
+            setNotes(updatedNotes);
+            if (selectedNoteId === noteId) {
+                setSelectedNoteId(updatedNotes.length > 0 ? updatedNotes[0].id : null);
+            }
+        } catch (err) {
+            console.error('Failed to delete note:', err);
+            setError('Failed to delete note');
+        }
+    };
+
     const updateSelectedNote = (field: keyof Note, value: string) => {
         if (!selectedNoteId) return;
 
@@ -134,7 +152,16 @@ export default function NotesPage() {
                                 className={`note-item ${note.id === selectedNoteId ? 'active' : ''}`}
                                 onClick={() => setSelectedNoteId(note.id)}
                             >
-                                <div className="note-title">{note.title || 'Untitled'}</div>
+                                <div className="note-header-row">
+                                    <div className="note-title">{note.title || 'Untitled'}</div>
+                                    <button
+                                        className="delete-note-btn"
+                                        onClick={(e) => handleDeleteNote(e, note.id)}
+                                        title="Delete note"
+                                    >
+                                        <Trash2 size={14} />
+                                    </button>
+                                </div>
                                 <div className="note-preview">
                                     {note.content?.slice(0, 40) || 'No content'}
                                 </div>

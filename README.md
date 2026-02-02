@@ -1,141 +1,171 @@
-# Equinox - AI Chat Application
+# Equinox - AI-Powered Wellness & Productivity Assistant
 
-A full-stack chat application with AI-powered responses using Groq's free LLM API.
+A full-stack multi-agent AI application that helps manage your wellness and productivity through intelligent chat-based interactions.
+
+## Features
+
+### Multi-Agent Architecture
+- **Supervisor Agent**: Routes queries to the appropriate specialist
+- **Wellness Agent**: Handles health, sleep, readiness, and workout queries
+- **Productivity Agent**: Manages emails, notes, todos, and task management
+
+### Integrations
+- **Google OAuth**: Sign in with Google to access email summaries
+- **Opik Tracing**: LLM observability and conversation threading
+- **PostgreSQL**: Persistent storage for notes, todos, and chat history
+
+### Frontend
+- Modern React + TypeScript UI with Vite
+- Markdown-rendered chat responses
+- Note-taking with auto-save
+- Todo management
+- Chat history persistence
 
 ## Quick Start
 
 ### Prerequisites
-- Python 3.8+
-- Node.js 16+
-- Groq API key (get free at https://console.groq.com/keys)
+- Python 3.10+
+- Node.js 18+
+- PostgreSQL database
+- API Keys:
+  - Groq API key (https://console.groq.com/keys)
+  - Opik API key (https://www.comet.com/opik)
+  - Google OAuth credentials (for email integration)
 
-### One-command startup
+### One-Command Startup
 
 ```bash
-# from repo root
-echo 'GROQ_API_KEY=your_groq_api_key_here' > backend/.env
+# Clone and setup
+git clone <repo-url>
+cd equinox
+
+# Configure environment
+cp backend/.env.example backend/.env
+# Edit backend/.env with your API keys
+
+# Run everything
 chmod +x startup.sh
 ./startup.sh
 ```
 
-The script installs backend/frontend dependencies and starts both servers (backend on 8000, frontend on 5173). Press Ctrl+C to stop.
+### Environment Variables
 
-### Manual setup (optional)
+Create `backend/.env`:
 
-#### 1. Setup Backend
+```env
+# Required
+GROQ_API_KEY=your_groq_api_key
+DATABASE_URL=postgresql://user:pass@localhost:5432/equinox
 
-```bash
-cd backend
+# Observability (Optional but recommended)
+OPIK_API_KEY=your_opik_api_key
+OPIK_WORKSPACE=your_workspace
 
-# Install dependencies
-pip3 install -r requirements.txt
-
-# Create .env file with your Groq API key
-echo 'GROQ_API_KEY=your_groq_api_key_here' > .env
-
-# Start backend server (runs on http://localhost:8000)
-python3 -m uvicorn main:app --reload
+# Google OAuth (for email features)
+GOOGLE_CLIENT_ID=your_client_id
+GOOGLE_CLIENT_SECRET=your_client_secret
 ```
-
-#### 2. Setup Frontend
-
-```bash
-cd frontend
-
-# Install dependencies
-npm install
-
-# Start development server (runs on http://localhost:5173)
-npm run dev
-```
-
-### Access the Application
-
-- **Chat App**: http://localhost:5173
-- **API Docs**: http://localhost:8000/docs (Swagger UI)
-- **Alternative Docs**: http://localhost:8000/redoc (ReDoc)
 
 ## Project Structure
 
 ```
 equinox/
 ├── backend/
-│   ├── main.py          # FastAPI application
-│   ├── requirements.txt  # Python dependencies
-│   └── .env            # API keys (not in git)
-└── frontend/
-    ├── src/
-    │   ├── pages/Chat/ChatPage.tsx   # Chat interface
-    │   ├── App.tsx                   # Main app
-    │   └── main.tsx                  # Entry point
-    ├── package.json    # Node dependencies
-    └── vite.config.ts  # Vite configuration
-```
-
-## Features
-
-- Real-time AI chat with Groq's Llama 3.3 70B model
-- FastAPI backend with automatic API documentation
-- React + TypeScript frontend
-- CORS enabled for local development
-- Error handling and graceful fallbacks
-
-## Environment Variables
-
-Create a `.env` file in the backend folder:
-
-```env
-GROQ_API_KEY=your_api_key_here
-```
-
-⚠️ **Never commit the `.env` file** - it's in `.gitignore`
-
-## Development
-
-### Backend Commands
-```bash
-# Start with auto-reload
-python3 -m uvicorn main:app --reload
-
-# Custom port
-python3 -m uvicorn main:app --port 5000 --reload
-
-# Production (no reload)
-python3 -m uvicorn main:app
-```
-
-### Frontend Commands
-```bash
-# Development
-npm run dev
-
-# Build
-npm run build
-
-# Preview production build
-npm run preview
+│   ├── agents/
+│   │   ├── productivity/    # Email, notes, todos agent
+│   │   └── wellness/        # Health and fitness agent
+│   ├── supervisor/          # Query router
+│   ├── api/                 # REST endpoints
+│   ├── database/            # Models and connection
+│   ├── tools/               # Google auth utilities
+│   └── main.py              # FastAPI app
+├── frontend/
+│   ├── src/
+│   │   ├── pages/
+│   │   │   ├── Chat/        # Chat interface
+│   │   │   ├── Productivity/# Notes, Todos
+│   │   │   └── Wellness/    # Health dashboard
+│   │   ├── components/      # Shared components
+│   │   └── api/             # API utilities
+│   └── package.json
+└── startup.sh               # Dev startup script
 ```
 
 ## API Endpoints
 
+### Core
 - `GET /ping` - Health check
-- `POST /chat` - Send message and get AI response
-  - Request: `{ "message": "your message" }`
-  - Response: `{ "reply": "AI response" }`
+- `POST /supervisor` - Send message to AI
+
+### Notes
+- `GET /notes/{email}` - Get user notes
+- `POST /notes/` - Create note
+- `PATCH /notes/{id}` - Update note
+- `DELETE /notes/{id}` - Delete note
+
+### Todos
+- `GET /todos/{email}` - Get user todos
+- `POST /todos/` - Create todo
+- `PATCH /todos/{id}` - Toggle/update todo
+- `DELETE /todos/{id}` - Delete todo
+
+### Chat History
+- `GET /api/history/{email}` - Get all threads
+- `GET /api/history/{email}/{thread_id}` - Get specific thread
+- `POST /api/history/{email}/{thread_id}` - Save thread
+
+## Tech Stack
+
+### Backend
+- FastAPI + Uvicorn
+- LangGraph + LangChain
+- Groq (Llama 3.3 70B)
+- SQLAlchemy + PostgreSQL
+- Opik (LLM observability)
+
+### Frontend
+- React 19 + TypeScript
+- Vite
+- React Router
+- React Markdown (GFM)
+- Lucide Icons
+
+## Development
+
+### Backend
+```bash
+cd backend
+pip install -r requirements.txt
+python -m uvicorn main:app --reload
+```
+
+### Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+## Observability
+
+Traces are sent to Opik under the `equinox` project. Each conversation is grouped by `thread_id` for easy debugging.
+
+View traces at: https://www.comet.com/opik
 
 ## Troubleshooting
 
-### Backend won't start
-- Check Python 3.8+ is installed: `python3 --version`
-- Verify `.env` file exists with valid Groq API key
-- Port 8000 already in use? Use `--port 5000`
+### "OPIK_API_KEY not found"
+Set the environment variable in `backend/.env`
 
-### Frontend won't connect to backend
-- Ensure backend is running on port 8000
-- Check browser console for errors (F12)
-- Clear browser cache and reload
+### Google OAuth errors
+Ensure `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are set
 
-### Rate limiting errors
-- Groq free tier: 30 requests/minute
-- Wait a minute before making more requests
-- Upgrade plan for higher limits
+### Rate limiting (429)
+Groq free tier: 30 req/min. Wait or upgrade plan.
+
+### Database connection errors
+Verify `DATABASE_URL` and that PostgreSQL is running
+
+## License
+
+MIT

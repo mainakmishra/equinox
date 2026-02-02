@@ -4,7 +4,9 @@ import os
 from typing import Literal
 
 from langchain_groq import ChatGroq
+from opik.integrations.langchain import OpikTracer
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+from langchain_core.runnables import RunnableConfig
 from langgraph.graph import StateGraph, END
 from pydantic import BaseModel, Field
 
@@ -46,7 +48,7 @@ def create_supervisor_graph():
         if not any(isinstance(m, SystemMessage) for m in messages):
             messages = [SystemMessage(content=SYSTEM_PROMPT)] + list(messages)
             
-        result = router.invoke(messages)
+        result = router.invoke(messages, config={"callbacks": [OpikTracer(project_name="equinox")]})
         
         # We append the supervisor's thought/response to history
         return {
@@ -54,9 +56,14 @@ def create_supervisor_graph():
             "messages": [AIMessage(content=result.response)]
         }
     
-    def call_wellness_agent(state: SupervisorState):
+    def call_wellness_agent(state: SupervisorState, config: RunnableConfig):
         """Invoke wellness agent graph"""
         wellness_agent = get_wellness_agent()
+        
+        # Extract thread_id from metadata if present
+        metadata = config.get("metadata", {})
+        thread_id = metadata.get("thread_id")
+        
         # Transform state for sub-agent
         sub_state = {
             "messages": state["messages"],
@@ -65,19 +72,36 @@ def create_supervisor_graph():
              # other fields init to None
             "today_health": None
         }
-        result = wellness_agent.invoke(sub_state)
+        
+        # Pass metadata to sub-agent
+        invoke_config = {"callbacks": [OpikTracer(project_name="equinox")]}
+        if thread_id:
+            invoke_config["metadata"] = {"thread_id": thread_id}
+            
+        result = wellness_agent.invoke(sub_state, config=invoke_config)
         # We want to capture the LAST message from the sub-agent
         last_msg = result["messages"][-1]
         return {"messages": [last_msg]}
 
-    def call_productivity_agent(state: SupervisorState):
+    def call_productivity_agent(state: SupervisorState, config: RunnableConfig):
         """Invoke productivity agent graph"""
         prod_agent = get_productivity_agent()
+        
+        # Extract thread_id from metadata if present
+        metadata = config.get("metadata", {})
+        thread_id = metadata.get("thread_id")
+        
         sub_state = {
             "messages": state["messages"],
             "user_id": state["user_id"]
         }
-        result = prod_agent.invoke(sub_state)
+        
+        # Pass metadata to sub-agent
+        invoke_config = {"callbacks": [OpikTracer(project_name="equinox")]}
+        if thread_id:
+            invoke_config["metadata"] = {"thread_id": thread_id}
+            
+        result = prod_agent.invoke(sub_state, config=invoke_config)
         last_msg = result["messages"][-1]
         return {"messages": [last_msg]}
 

@@ -4,7 +4,11 @@ import os
 from dotenv import load_dotenv
 
 # load env vars from backend directory
-load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
+# load env vars from backend directory
+env_path = os.path.join(os.path.dirname(__file__), ".env")
+load_dotenv(env_path)
+print(f"Loading env from {env_path}")
+print(f"OPIK_API_KEY present: {'OPIK_API_KEY' in os.environ}")
 
 # required for local oauth testing
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
@@ -13,6 +17,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from groq import Groq
+from opik.integrations.langchain import OpikTracer
 
 # supervisor and productivity agents
 # from supervisor.supervisor_agent import SupervisorAgent # Removed
@@ -75,6 +80,7 @@ app.include_router(emails_router)
 class ChatRequest(BaseModel):
     message: str
     email: str | None = None
+    thread_id: str | None = None
 
 
 @app.get("/ping")
@@ -91,6 +97,9 @@ def supervisor_endpoint(req: ChatRequest):
     from supervisor.supervisor_agent import get_supervisor_graph
     from langchain_core.messages import HumanMessage
     
+    import uuid
+    thread_id = req.thread_id if req.thread_id else str(uuid.uuid4())
+    
     supervisor = get_supervisor_graph()
     
     initial_state = {
@@ -99,10 +108,18 @@ def supervisor_endpoint(req: ChatRequest):
         "next": None
     }
     
-    result = supervisor.invoke(initial_state)
-    last_message = result["messages"][-1]
-    
-    return {"reply": last_message.content}
+    try:
+        # Pass thread_id in metadata for Opik
+        result = supervisor.invoke(initial_state, config={
+            "callbacks": [OpikTracer(project_name="equinox")],
+            "metadata": {"thread_id": thread_id}
+        })
+        last_message = result["messages"][-1]
+        return {"reply": last_message.content, "thread_id": thread_id}
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return {"reply": f"Error interacting with supervisor: {str(e)}"}
 
 
 @app.post("/chat")

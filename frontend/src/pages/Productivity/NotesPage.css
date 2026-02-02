@@ -21,6 +21,9 @@
   padding: 6px 12px;
   border-radius: 6px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .notes-layout {
@@ -51,9 +54,40 @@
   background: #3a3a3a;
 }
 
+.note-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  /* Added gap */
+}
+
 .note-title {
   font-weight: 600;
   font-size: 14px;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.delete-note-btn {
+  background: transparent !important;
+  /* override toolbar button style if specific match needed, though generic button style is restricted to .notes-toolbar button */
+  padding: 4px;
+  border-radius: 4px;
+  color: #666;
+  opacity: 0;
+  transition: opacity 0.2s, background-color 0.2s, color 0.2s;
+}
+
+.note-item:hover .delete-note-btn {
+  opacity: 1;
+}
+
+.delete-note-btn:hover {
+  background: rgba(255, 59, 48, 0.2) !important;
+  color: #ff3b30;
 }
 
 .note-preview {

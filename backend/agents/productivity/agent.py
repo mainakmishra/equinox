@@ -7,6 +7,7 @@ from langchain_groq import ChatGroq
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode
+from opik.integrations.langchain import OpikTracer
 
 from .state import ProductivityState
 from .tools import PRODUCTIVITY_TOOLS
@@ -102,7 +103,8 @@ def chat_with_productivity_agent(user_id: str, message: str) -> str:
         "user_id": user_id
     }
     
-    result = agent.invoke(initial_state)
+    opik_tracer = OpikTracer(project_name="equinox")
+    result = agent.invoke(initial_state, config={"callbacks": [opik_tracer]})
     
     last_message = result["messages"][-1]
     return last_message.content
