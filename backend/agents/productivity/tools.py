@@ -174,5 +174,135 @@ def delete_todo(todo_id: str) -> dict:
         session.close()
 
 
-PRODUCTIVITY_TOOLS = [fetch_recent_emails, fetch_notes, create_note, delete_note, fetch_todos, create_todo, delete_todo]
+
+
+# Google Tasks Tools
+
+@tool
+def get_google_tasks(user_id: str) -> dict:
+    """
+    Get all tasks from Google Tasks.
+    Use this to see the user's task list from Google.
+    """
+    from state.user_tokens import get_user_tokens, user_tokens_store
+    
+    tokens = get_user_tokens(user_id)
+    if not tokens and user_tokens_store:
+        # Fallback to any available token for demo
+        tokens = next(iter(user_tokens_store.values()))
+    
+    if not tokens:
+        return {"error": "No Google tokens found. User needs to sign in."}
+    
+    try:
+        service = google_auth.get_tasks_service(tokens)
+        tasks = google_auth.fetch_tasks(service)
+        
+        formatted_tasks = [{
+            "title": task.get('title', 'Untitled'),
+            "status": task.get('status', 'needsAction'),
+            "due": task.get('due'),
+            "notes": task.get('notes', '')[:100] if task.get('notes') else None
+        } for task in tasks]
+        
+        return {"google_tasks": formatted_tasks, "count": len(formatted_tasks)}
+    except Exception as e:
+        return {"error": f"Failed to fetch Google Tasks: {str(e)}"}
+
+
+@tool
+def create_google_task(user_id: str, title: str, notes: Optional[str] = None) -> dict:
+    """
+    Create a new task in Google Tasks.
+    Args:
+        user_id: The user's ID for token lookup
+        title: The title of the task
+        notes: Optional description/notes for the task
+    """
+    from state.user_tokens import get_user_tokens, user_tokens_store
+    
+    tokens = get_user_tokens(user_id)
+    if not tokens and user_tokens_store:
+        tokens = next(iter(user_tokens_store.values()))
+    
+    if not tokens:
+        return {"error": "No Google tokens found. User needs to sign in."}
+    
+    try:
+        service = google_auth.get_tasks_service(tokens)
+        result = google_auth.create_task(service, title, notes)
+        return {"status": "success", "task_id": result.get('id'), "message": f"Task '{title}' created in Google Tasks."}
+    except Exception as e:
+        return {"error": f"Failed to create Google Task: {str(e)}"}
+
+
+@tool  
+def get_email_summary(user_id: str) -> dict:
+    """
+    Get a summary of recent emails highlighting urgent items and action items.
+    Use this when the user asks about their email priorities or what needs attention.
+    """
+    import os
+    from langchain_groq import ChatGroq
+    from state.user_tokens import get_user_tokens, user_tokens_store
+    
+    tokens = get_user_tokens(user_id)
+    if not tokens and user_tokens_store:
+        tokens = next(iter(user_tokens_store.values()))
+    
+    if not tokens:
+        return {"error": "No Google tokens found. User needs to sign in."}
+    
+    try:
+        service = google_auth.get_gmail_service(tokens)
+        email_ids = google_auth.fetch_recent_emails(service, max_results=5)
+        
+        emails = []
+        for email_meta in email_ids:
+            details = google_auth.get_email_details(service, email_meta['id'])
+            emails.append(details)
+        
+        if not emails:
+            return {"summary": "No recent emails found.", "email_count": 0}
+        
+        email_text = "\n\n".join([
+            f"From: {e['sender']}\nSubject: {e['subject']}\nDate: {e['date']}\nContent: {e['body'][:500]}"
+            for e in emails
+        ])
+        
+        llm = ChatGroq(
+            model="llama-3.3-70b-versatile",
+            temperature=0.3,
+            api_key=os.getenv("GROQ_API_KEY")
+        )
+        
+        prompt = f"""Summarize these emails in 2-3 sentences. Highlight:
+1. Urgent items needing immediate attention
+2. Action items to respond to
+
+Emails:
+{email_text}
+
+Brief summary:"""
+
+        response = llm.invoke(prompt)
+        
+        return {"summary": response.content, "email_count": len(emails)}
+    except Exception as e:
+        return {"error": f"Failed to summarize emails: {str(e)}"}
+
+
+# All productivity tools list
+PRODUCTIVITY_TOOLS = [
+    fetch_recent_emails,
+    fetch_notes,
+    create_note,
+    delete_note,
+    fetch_todos,
+    create_todo,
+    delete_todo,
+    get_google_tasks,
+    create_google_task,
+    get_email_summary
+]
 

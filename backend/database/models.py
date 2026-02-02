@@ -349,3 +349,24 @@ class ChatThread(Base):
     
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
 
+
+
+class UserToken(Base):
+    """OAuth tokens for external services (Google, etc.)"""
+    __tablename__ = "user_tokens"
+
+    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_email = Column(Text, nullable=False, unique=True, index=True)
+    
+    # Google OAuth tokens
+    access_token = Column(Text)
+    refresh_token = Column(Text)
+    token_uri = Column(Text)
+    client_id = Column(Text)
+    client_secret = Column(Text)
+    scopes = Column(JSONB, default=[])
+    
+    # Metadata
+    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
+    updated_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now())
+
