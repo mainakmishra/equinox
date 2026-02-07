@@ -12,11 +12,13 @@ from state.user_tokens import save_user_tokens
 
 router = APIRouter()
 
-CLIENT_SECRET_PATH = os.path.join(
-    os.path.dirname(__file__), "client_secret.json"
-)
+# Get OAuth credentials from environment variables
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
+REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "http://localhost:8000/auth/google/callback")
 
-REDIRECT_URI = "http://localhost:8000/auth/google/callback"
+# Frontend URL for redirect after auth
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
 
 SCOPES = [
     "openid",
@@ -27,13 +29,23 @@ SCOPES = [
 ]
 
 
+def get_oauth_flow():
+    """Create OAuth flow from environment variables"""
+    client_config = {
+        "web": {
+            "client_id": GOOGLE_CLIENT_ID,
+            "client_secret": GOOGLE_CLIENT_SECRET,
+            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            "token_uri": "https://oauth2.googleapis.com/token",
+            "redirect_uris": [REDIRECT_URI],
+        }
+    }
+    return Flow.from_client_config(client_config, scopes=SCOPES, redirect_uri=REDIRECT_URI)
+
+
 @router.get("/auth/google/login")
 def google_login():
-    flow = Flow.from_client_secrets_file(
-        CLIENT_SECRET_PATH,
-        scopes=SCOPES,
-        redirect_uri=REDIRECT_URI,
-    )
+    flow = get_oauth_flow()
 
     auth_url, _ = flow.authorization_url(
         access_type="offline",
@@ -46,11 +58,7 @@ def google_login():
 
 @router.get("/auth/google/callback")
 def google_callback(request: Request, db: Session = Depends(get_db)):
-    flow = Flow.from_client_secrets_file(
-        CLIENT_SECRET_PATH,
-        scopes=SCOPES,
-        redirect_uri=REDIRECT_URI,
-    )
+    flow = get_oauth_flow()
 
     flow.fetch_token(authorization_response=str(request.url))
     credentials = flow.credentials
@@ -97,7 +105,7 @@ def google_callback(request: Request, db: Session = Depends(get_db)):
     save_user_tokens(google_email, tokens)
 
     return RedirectResponse(
-        f"http://localhost:5173/chat?email={google_email}"
+        f"{FRONTEND_URL}/chat?email={google_email}"
     )
 
 
