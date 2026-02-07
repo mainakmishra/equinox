@@ -56,6 +56,7 @@ app.add_middleware(
         "http://localhost:3000",
         "https://equinox-six-xi.vercel.app",
         "https://equinox.vercel.app",
+        "https://equinox0.netlify.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
