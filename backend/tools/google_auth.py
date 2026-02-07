@@ -60,7 +60,15 @@ def google_login():
 def google_callback(request: Request, db: Session = Depends(get_db)):
     flow = get_oauth_flow()
 
-    flow.fetch_token(authorization_response=str(request.url))
+    try:
+        flow.fetch_token(
+            authorization_response=str(request.url),
+            include_granted_scopes=False  # Don't require all scopes
+        )
+    except Exception as e:
+        # Handle invalid_grant or other OAuth errors
+        return RedirectResponse(f"{FRONTEND_URL}?error=auth_failed")
+    
     credentials = flow.credentials
 
     # Fetch user profile
