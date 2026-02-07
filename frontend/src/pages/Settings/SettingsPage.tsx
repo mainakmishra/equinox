@@ -5,10 +5,13 @@ import { fetchUserProfileByEmail } from '../../api/profileApi';
 import { getUserEmail, clearAuth } from '../../utils/authUtils';
 
 export default function SettingsPage() {
+    const userEmail = getUserEmail(); // Get email directly from localStorage
+
     const handleSignOut = () => {
         clearAuth();
         window.location.href = '/';
     };
+
     const [googleConnected, setGoogleConnected] = useState(true);
     const [outlookConnected, setOutlookConnected] = useState(false);
     const [stravaConnected, setStravaConnected] = useState(false);
@@ -16,24 +19,24 @@ export default function SettingsPage() {
     // Profile state
     const [profile, setProfile] = useState<any>(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const email = getUserEmail();
-        if (email) {
-            fetchUserProfileByEmail(email)
+        if (userEmail) {
+            fetchUserProfileByEmail(userEmail)
                 .then(setProfile)
                 .catch((err) => {
                     console.error('Profile fetch error:', err);
-                    setError("Could not load profile. Please try signing in again.");
+                    // Don't set error - we'll use localStorage email as fallback
                 })
                 .finally(() => setLoading(false));
         } else {
-            setError('No user email found. Please sign in.');
             setLoading(false);
         }
-    }, []);
+    }, [userEmail]);
 
+    // Extract name from email (before @) as fallback
+    const displayName = profile?.name || userEmail?.split('@')[0] || 'User';
+    const displayEmail = profile?.email || userEmail || 'Not available';
 
     return (
         <>
@@ -41,16 +44,27 @@ export default function SettingsPage() {
             <div className="settingspage">
                 <div className="settingspage-content">
                     <h1 className="settingspage-title">Profile</h1>
-                    {loading && <p>Loading profile...</p>}
-                    {error && <p style={{ color: "red" }}>{error}</p>}
-                    {profile && (
+                    {loading ? (
+                        <div className="profile-skeleton">
+                            <div className="skeleton-avatar"></div>
+                            <div className="skeleton-text"></div>
+                            <div className="skeleton-text short"></div>
+                        </div>
+                    ) : (
                         <div className="profile-section">
-                            {profile.avatar_url && (
+                            {profile?.avatar_url && (
                                 <img src={profile.avatar_url} alt="avatar" className="profile-avatar" />
                             )}
-                            <p><strong>Name:</strong> {profile.name}</p>
-                            <p><strong>Email:</strong> {profile.email}</p>
-                            {/* Add more fields as needed */}
+                            <div className="profile-info">
+                                <div className="profile-row">
+                                    <span className="profile-label">Name</span>
+                                    <span className="profile-value">{displayName}</span>
+                                </div>
+                                <div className="profile-row">
+                                    <span className="profile-label">Email</span>
+                                    <span className="profile-value">{displayEmail}</span>
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>

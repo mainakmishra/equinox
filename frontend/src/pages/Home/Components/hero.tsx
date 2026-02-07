@@ -4,7 +4,7 @@ import { handleGoogleSignIn } from "../../../api/authApi";
 export function Hero() {
     return (
         <section className="hero">
-            {/* Background glow effect */}
+            {/* Multiple gradient glows for depth */}
             <div className="hero__glow" />
 
             <div className="container hero__content">
@@ -40,9 +40,10 @@ export function Hero() {
                         Watch Demo
                     </button>
                 </div>
+
                 {/* Social proof */}
                 <div className="hero__social-proof">
-                    <p className="hero__social-proof-text">Built with 💙 for Encode AI: Commit to Change </p>
+                    <p className="hero__social-proof-text">Built with 💙 for Encode AI: Commit to Change</p>
                     <div className="hero__social-proof-items">
                         {["Deepak", "Mainak", "Abhayjit"].map((item) => (
                             <span key={item} className="hero__social-proof-item">{item}</span>
