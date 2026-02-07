@@ -48,10 +48,15 @@ app = FastAPI(
     version="0.1.0"
 )
 
-# cors setup - allow all for dev
+# cors setup - allow frontend origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "https://equinox-six-xi.vercel.app",
+        "https://equinox.vercel.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
