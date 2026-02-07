@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import './SettingsPage.css';
 import SignedInNavbar from '../../components/Navbar/SignedInNavbar';
 import { fetchUserProfileByEmail } from '../../api/profileApi';
+import { getUserEmail, clearAuth } from '../../utils/authUtils';
 
 export default function SettingsPage() {
     const handleSignOut = () => {
-        localStorage.removeItem('signedIn');
+        clearAuth();
         window.location.href = '/';
     };
     const [googleConnected, setGoogleConnected] = useState(true);
@@ -18,18 +19,21 @@ export default function SettingsPage() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        // Get email from localStorage
-        const email = localStorage.getItem('user_email');
+        const email = getUserEmail();
         if (email) {
             fetchUserProfileByEmail(email)
                 .then(setProfile)
-                .catch(() => setError("Could not load profile"))
+                .catch((err) => {
+                    console.error('Profile fetch error:', err);
+                    setError("Could not load profile. Please try signing in again.");
+                })
                 .finally(() => setLoading(false));
         } else {
             setError('No user email found. Please sign in.');
             setLoading(false);
         }
     }, []);
+
 
     return (
         <>

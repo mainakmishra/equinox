@@ -2,17 +2,17 @@ import { useEffect, useState } from 'react';
 import { fetchTodos, addTodo, updateTodo, deleteTodo, type Todo } from '../../api/todosApi';
 import './TodosPage.css';
 import SignedInNavbar from '../../components/Navbar/SignedInNavbar';
+import { getUserEmail, clearAuth } from '../../utils/authUtils';
 
 export default function TodosPage() {
-    const user_email = localStorage.getItem('user_email') || '';
+    const user_email = getUserEmail();
     const [todos, setTodos] = useState<Todo[]>([]);
     const [newTodoText, setNewTodoText] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     const handleSignOut = () => {
-        localStorage.removeItem('signedIn');
-        localStorage.removeItem('user_email');
+        clearAuth();
         window.location.href = '/';
     };
 

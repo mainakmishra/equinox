@@ -5,7 +5,7 @@ import { WellnessAgent } from './WellnessAgent/WellnessAgent';
 import { BriefingAgent } from './BriefingAgent/BriefingAgent';
 import SupervisorAgent from './SupervisorAgent/SupervisorAgent';
 import SignedInNavbar from '../../components/Navbar/SignedInNavbar';
-
+import { clearAuth } from '../../utils/authUtils';
 
 // Example agent type - adjust based on your actual agent files
 interface Agent {
@@ -24,7 +24,7 @@ interface Agent {
 
 export default function AgentsPage() {
   const handleSignOut = () => {
-    localStorage.removeItem('signedIn');
+    clearAuth();
     window.location.href = '/';
   };
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);

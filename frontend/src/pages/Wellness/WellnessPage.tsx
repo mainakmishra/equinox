@@ -12,6 +12,7 @@ import type {
     ReadinessResponse
 } from '../../api/healthApi';
 import './WellnessPage.css';
+import { clearAuth } from '../../utils/authUtils';
 
 export default function WellnessPage() {
     const [todayLog, setTodayLog] = useState<HealthLogResponse | null>(null);
@@ -36,8 +37,7 @@ export default function WellnessPage() {
     });
 
     const handleSignOut = () => {
-        localStorage.removeItem('signedIn');
-        localStorage.removeItem('user_email');
+        clearAuth();
         window.location.href = '/';
     };
 

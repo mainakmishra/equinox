@@ -7,6 +7,7 @@ import { sendChatMessage, saveThread, getThread } from '../../api/chatApi';
 import SignedInNavbar from '../../components/Navbar/SignedInNavbar';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { clearAuth, setAuth } from '../../utils/authUtils';
 
 // Typing indicator component
 const TypingIndicator = () => (
@@ -33,7 +34,7 @@ export default function ChatInterface() {
 
     // Sign out handler for navbar
     const handleSignOut = () => {
-        localStorage.removeItem('signedIn');
+        clearAuth();
         window.location.href = '/';
     };
 
@@ -48,7 +49,8 @@ export default function ChatInterface() {
     useEffect(() => {
         // If we have both, ensures local storage is synced
         if (routeEmail && threadId) {
-            localStorage.setItem('user_email', routeEmail);
+            setAuth(routeEmail);
+
 
             // Load thread whenever threadId changes
             const PORT = import.meta.env.REACT_APP_BACKEND_PORT || '8000';

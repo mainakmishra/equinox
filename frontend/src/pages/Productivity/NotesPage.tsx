@@ -3,6 +3,7 @@ import { fetchNotes, addNote, updateNote, deleteNote } from '../../api/notesApi'
 import { Trash2 } from 'lucide-react';
 import './NotesPage.css';
 import SignedInNavbar from '../../components/Navbar/SignedInNavbar';
+import { getUserEmail, clearAuth } from '../../utils/authUtils';
 
 interface Note {
     id: string;
@@ -15,7 +16,7 @@ interface Note {
 }
 
 export default function NotesPage() {
-    const user_email = localStorage.getItem('user_email') || '';
+    const user_email = getUserEmail();
     const [notes, setNotes] = useState<Note[]>([]);
     const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -23,8 +24,7 @@ export default function NotesPage() {
     const saveTimeoutRef = useRef<number | null>(null);
 
     const handleSignOut = () => {
-        localStorage.removeItem('signedIn');
-        localStorage.removeItem('user_email');
+        clearAuth();
         window.location.href = '/';
     };
 

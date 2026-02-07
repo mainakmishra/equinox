@@ -5,11 +5,24 @@ import { MorningBriefing } from "./Components/morning-briefing";
 import { CTA } from "./Components/cta";
 import './styles/styles.css';
 import { Navbar } from '../../components/Navbar/Navbar';
+import SignedInNavbar from '../../components/Navbar/SignedInNavbar';
+import { isAuthenticated, clearAuth } from '../../utils/authUtils';
 
 export default function Home() {
+  const signedIn = isAuthenticated();
+
+  const handleSignOut = () => {
+    clearAuth();
+    window.location.href = '/';
+  };
+
   return (
     <>
-      <Navbar />
+      {signedIn ? (
+        <SignedInNavbar onSignOut={handleSignOut} />
+      ) : (
+        <Navbar />
+      )}
       <main className="min-h-screen bg-background">
         <Hero />
         <Features />
@@ -21,5 +34,3 @@ export default function Home() {
     </>
   );
 }
-
-
