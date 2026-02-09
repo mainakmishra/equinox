@@ -12,7 +12,6 @@ import type {
     ReadinessResponse
 } from '../../api/healthApi';
 import './WellnessPage.css';
-import { getClassNames } from '../../utils/classNames';
 import { getUserEmail, clearAuth } from '../../utils/authUtils';
 
 export default function WellnessPage() {
