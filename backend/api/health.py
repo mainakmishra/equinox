@@ -141,7 +141,7 @@ def get_today(user_email: Optional[str] = None, db: Session = Depends(get_db)):
     
     user_id = UUID(TEST_USER_ID)
     if user_email:
-        user = db.query(User).filter(User.email == user_email).first()
+        user = db.query(User).filter(User.email == user_email.lower()).first()
         if user:
             user_id = user.id
             
@@ -164,7 +164,7 @@ def get_history(days: int = 7, user_email: Optional[str] = None, db: Session = D
     
     user_id = UUID(TEST_USER_ID)
     if user_email:
-        user = db.query(User).filter(User.email == user_email).first()
+        user = db.query(User).filter(User.email == user_email.lower()).first()
         if user:
             user_id = user.id
             
@@ -181,7 +181,7 @@ def get_readiness(user_email: Optional[str] = None, db: Session = Depends(get_db
     
     user_id = UUID(TEST_USER_ID)
     if user_email:
-        user = db.query(User).filter(User.email == user_email).first()
+        user = db.query(User).filter(User.email == user_email.lower()).first()
         if user:
             user_id = user.id
             
