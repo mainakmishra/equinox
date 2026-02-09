@@ -18,6 +18,7 @@ async def generate_briefing(user_email: str) -> dict:
     Returns:
         dict with greeting, sleep_score, critical_emails, schedule_updated, summary
     """
+    user_email = user_email.lower()
     
     # 1. Get health data
     sleep_score = 0
@@ -75,7 +76,8 @@ async def generate_briefing(user_email: str) -> dict:
         
         if tokens: # Re-use tokens from above
             service = get_gmail_service(tokens)
-            emails = fetch_recent_emails(service, max_results=5) # Fetch last 5
+            # Fetch specifically unread emails to get accurate critical count
+            emails = fetch_recent_emails(service, max_results=10, query='is:unread')
             
             for e in emails:
                 # Get details for better context

@@ -158,11 +158,11 @@ def update_todo_service(db: Session, todo_id_str: str, updates: TodoUpdate):
 def add_todo(todo: TodoCreate, db: Session = Depends(get_db)):
     # TODO: Add to Google Tasks if user is authenticated?
     # For now, add to local DB
-    return create_todo_service(db, todo.user_email, todo.text, todo.due_date)
+    return create_todo_service(db, todo.user_email.lower(), todo.text, todo.due_date)
 
 @router.get("/{user_email}", response_model=List[TodoResponse])
 def get_todos(user_email: str, db: Session = Depends(get_db)):
-    return get_todos_service(db, user_email)
+    return get_todos_service(db, user_email.lower())
 
 @router.delete("/{todo_id}")
 def delete_todo(todo_id: str, user_email: Optional[str] = None, db: Session = Depends(get_db)):
@@ -174,7 +174,7 @@ def delete_todo(todo_id: str, user_email: Optional[str] = None, db: Session = De
     # If fetch failed or wasn't a UUID, try Google Task
     if user_email:
         from tools.google_auth import get_tasks_service, delete_task
-        tokens = get_user_tokens(user_email)
+        tokens = get_user_tokens(user_email.lower())
         if tokens:
             try:
                 service = get_tasks_service(tokens)
@@ -195,7 +195,7 @@ def update_todo(todo_id: str, updates: TodoUpdate, user_email: Optional[str] = N
     # Try Google Task update
     if user_email:
         from tools.google_auth import get_tasks_service, update_task
-        tokens = get_user_tokens(user_email)
+        tokens = get_user_tokens(user_email.lower())
         if tokens:
             try:
                 service = get_tasks_service(tokens)
