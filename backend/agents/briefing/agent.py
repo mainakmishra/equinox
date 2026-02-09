@@ -52,15 +52,20 @@ async def generate_briefing(user_email: str) -> dict:
     try:
         # Use the unified service that gets Local + Google tasks
         from api.todos import get_todos_service
+        from database.connection import SessionLocal
         
-        # This returns List[TodoResponse]
-        all_todos = get_todos_service(db, user_email)
-        
-        # Filter for incomplete
-        incomplete_todos = [t for t in all_todos if not t.completed]
-        tasks_today = len(incomplete_todos)
-        schedule_updated = tasks_today > 0
-        task_titles = [t.text for t in incomplete_todos]
+        db = SessionLocal()
+        try:
+            # This returns List[TodoResponse]
+            all_todos = get_todos_service(db, user_email)
+            
+            # Filter for incomplete
+            incomplete_todos = [t for t in all_todos if not t.completed]
+            tasks_today = len(incomplete_todos)
+            schedule_updated = tasks_today > 0
+            task_titles = [t.text for t in incomplete_todos]
+        finally:
+            db.close()
         
     except Exception as e:
         print(f"Tasks fetch error: {e}")
