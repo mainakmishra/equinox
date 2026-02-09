@@ -10,6 +10,7 @@ user_tokens_store = {}
 
 def save_user_tokens(user_email: str, tokens: dict):
     """Save tokens to both memory cache and database"""
+    user_email = user_email.lower()
     # Update memory cache
     user_tokens_store[user_email] = tokens
     
@@ -50,6 +51,7 @@ def save_user_tokens(user_email: str, tokens: dict):
 
 def get_user_tokens(user_email: str) -> dict:
     """Get tokens - check memory cache first, then database"""
+    user_email = user_email.lower()
     # Check memory cache first
     if user_email in user_tokens_store:
         return user_tokens_store[user_email]

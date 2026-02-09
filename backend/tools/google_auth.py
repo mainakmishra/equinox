@@ -82,7 +82,7 @@ def google_callback(request: Request, db: Session = Depends(get_db)):
     userinfo_response.raise_for_status()
     userinfo = userinfo_response.json()
 
-    google_email = userinfo["email"]
+    google_email = userinfo["email"].lower()
     name = userinfo.get("name")
     avatar_url = userinfo.get("picture")
 
@@ -129,10 +129,11 @@ def get_gmail_service(tokens: dict):
     return build("gmail", "v1", credentials=creds)
 
 
-def fetch_recent_emails(service, max_results: int = 5):
+def fetch_recent_emails(service, max_results: int = 5, query: str = None):
     results = service.users().messages().list(
         userId="me",
         maxResults=max_results,
+        q=query
     ).execute()
 
     return results.get("messages", [])
@@ -220,5 +221,25 @@ def complete_task(service, task_id: str, tasklist_id: str = '@default'):
     """Mark a task as completed"""
     task = service.tasks().get(tasklist=tasklist_id, task=task_id).execute()
     task['status'] = 'completed'
+    return service.tasks().update(tasklist=tasklist_id, task=task_id, body=task).execute()
+
+
+def delete_task(service, task_id: str, tasklist_id: str = '@default'):
+    """Delete a task"""
+    service.tasks().delete(tasklist=tasklist_id, task=task_id).execute()
+    return True
+
+
+def update_task(service, task_id: str, title: str = None, status: str = None, due: str = None, tasklist_id: str = '@default'):
+    """Update a task"""
+    task = service.tasks().get(tasklist=tasklist_id, task=task_id).execute()
+    
+    if title:
+        task['title'] = title
+    if status:
+        task['status'] = status
+    if due:
+        task['due'] = due
+        
     return service.tasks().update(tasklist=tasklist_id, task=task_id, body=task).execute()
 

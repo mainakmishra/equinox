@@ -10,10 +10,14 @@ interface HealthLogPopupProps {
     onLogged: () => void;
 }
 
+import { getUserEmail } from '../../utils/authUtils';
+
 export default function HealthLogPopup({ onClose, onLogged }: HealthLogPopupProps) {
     const navigate = useNavigate();
+    const userEmail = getUserEmail();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [formData, setFormData] = useState<HealthLogInput>({
+        user_email: userEmail || undefined,
         sleep_hours: 7,
         sleep_quality: 7,
         energy_level: 7,

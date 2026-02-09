@@ -10,6 +10,7 @@ import { isAuthenticated, clearAuth } from '../../utils/authUtils';
 
 export default function Home() {
   const signedIn = isAuthenticated();
+  // const signedIn = true; // FORCE SHOW NAVBAR FOR DEMO
 
   const handleSignOut = () => {
     clearAuth();

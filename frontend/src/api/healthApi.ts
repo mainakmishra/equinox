@@ -4,6 +4,7 @@
 const API_BASE = `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/health`;
 
 export interface HealthLogInput {
+    user_email?: string;
     sleep_hours: number;
     sleep_quality: number;
     energy_level: number;
@@ -59,8 +60,12 @@ export async function logHealth(data: HealthLogInput): Promise<HealthLogResponse
     return res.json();
 }
 
-export async function getTodayHealth(): Promise<HealthLogResponse | null> {
-    const res = await fetch(`${API_BASE}/today`);
+export async function getTodayHealth(user_email?: string): Promise<HealthLogResponse | null> {
+    let url = `${API_BASE}/today`;
+    if (user_email) {
+        url += `?user_email=${encodeURIComponent(user_email)}`;
+    }
+    const res = await fetch(url);
     if (res.status === 404) {
         return null; // no log yet
     }
@@ -70,8 +75,12 @@ export async function getTodayHealth(): Promise<HealthLogResponse | null> {
     return res.json();
 }
 
-export async function getReadiness(): Promise<ReadinessResponse | null> {
-    const res = await fetch(`${API_BASE}/readiness`);
+export async function getReadiness(user_email?: string): Promise<ReadinessResponse | null> {
+    let url = `${API_BASE}/readiness`;
+    if (user_email) {
+        url += `?user_email=${encodeURIComponent(user_email)}`;
+    }
+    const res = await fetch(url);
     if (res.status === 404) {
         return null;
     }

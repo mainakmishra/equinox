@@ -29,7 +29,7 @@ async def get_morning_briefing(req: BriefingRequest):
     - Tasks for today
     - AI-generated summary
     """
-    briefing = await generate_briefing(req.email)
+    briefing = await generate_briefing(req.email.lower())
     return briefing
 
 

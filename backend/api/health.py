@@ -81,6 +81,11 @@ async def log_health(data: HealthLogCreate, db: Session = Depends(get_db)):
     """log or update health data for a date"""
     
     user_id = UUID(TEST_USER_ID)
+    if data.user_email:
+        user = db.query(User).filter(User.email == data.user_email.lower()).first()
+        if user:
+            user_id = user.id
+            
     log_date = data.date or date.today()
     
     # check if exists
@@ -93,7 +98,7 @@ async def log_health(data: HealthLogCreate, db: Session = Depends(get_db)):
     
     if existing:
         # update
-        for key, value in data.model_dump(exclude_unset=True, exclude={"date"}).items():
+        for key, value in data.model_dump(exclude_unset=True, exclude={"date", "user_email"}).items():
             setattr(existing, key, value)
         log = existing
     else:
@@ -101,7 +106,7 @@ async def log_health(data: HealthLogCreate, db: Session = Depends(get_db)):
         log = HealthLog(
             user_id=user_id,
             date=log_date,
-            **data.model_dump(exclude={"date"})
+            **data.model_dump(exclude={"date", "user_email"})
         )
         db.add(log)
     
@@ -131,10 +136,15 @@ async def log_health(data: HealthLogCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/today", response_model=HealthLogResponse)
-def get_today(db: Session = Depends(get_db)):
+def get_today(user_email: Optional[str] = None, db: Session = Depends(get_db)):
     """get today's health log"""
     
     user_id = UUID(TEST_USER_ID)
+    if user_email:
+        user = db.query(User).filter(User.email == user_email.lower()).first()
+        if user:
+            user_id = user.id
+            
     today = date.today()
     
     log = db.query(HealthLog).filter(
@@ -149,11 +159,15 @@ def get_today(db: Session = Depends(get_db)):
 
 
 @router.get("/history")
-def get_history(days: int = 7, db: Session = Depends(get_db)):
+def get_history(days: int = 7, user_email: Optional[str] = None, db: Session = Depends(get_db)):
     """get health history for last N days"""
     
     user_id = UUID(TEST_USER_ID)
-    
+    if user_email:
+        user = db.query(User).filter(User.email == user_email.lower()).first()
+        if user:
+            user_id = user.id
+            
     logs = db.query(HealthLog).filter(
         HealthLog.user_id == user_id
     ).order_by(HealthLog.date.desc()).limit(days).all()
@@ -162,10 +176,15 @@ def get_history(days: int = 7, db: Session = Depends(get_db)):
 
 
 @router.get("/readiness", response_model=ReadinessResponse)
-def get_readiness(db: Session = Depends(get_db)):
+def get_readiness(user_email: Optional[str] = None, db: Session = Depends(get_db)):
     """get current readiness score with breakdown"""
     
     user_id = UUID(TEST_USER_ID)
+    if user_email:
+        user = db.query(User).filter(User.email == user_email.lower()).first()
+        if user:
+            user_id = user.id
+            
     today = date.today()
     
     log = db.query(HealthLog).filter(

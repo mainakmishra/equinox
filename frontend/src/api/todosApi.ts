@@ -32,8 +32,12 @@ export async function addTodo(todo: { user_email: string; text: string; due_date
     return res.json();
 }
 
-export async function updateTodo(todoId: string, updates: { text?: string; completed?: boolean; due_date?: string }): Promise<Todo> {
-    const res = await fetch(`${API_URL}/todos/${todoId}`, {
+export async function updateTodo(todoId: string, updates: { text?: string; completed?: boolean; due_date?: string }, user_email?: string): Promise<Todo> {
+    let url = `${API_URL}/todos/${todoId}`;
+    if (user_email) {
+        url += `?user_email=${encodeURIComponent(user_email)}`;
+    }
+    const res = await fetch(url, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates)
@@ -44,8 +48,12 @@ export async function updateTodo(todoId: string, updates: { text?: string; compl
     return res.json();
 }
 
-export async function deleteTodo(todoId: string): Promise<void> {
-    const res = await fetch(`${API_URL}/todos/${todoId}`, {
+export async function deleteTodo(todoId: string, user_email?: string): Promise<void> {
+    let url = `${API_URL}/todos/${todoId}`;
+    if (user_email) {
+        url += `?user_email=${encodeURIComponent(user_email)}`;
+    }
+    const res = await fetch(url, {
         method: 'DELETE',
     });
     if (!res.ok) {

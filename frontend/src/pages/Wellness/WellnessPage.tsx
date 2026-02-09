@@ -12,9 +12,10 @@ import type {
     ReadinessResponse
 } from '../../api/healthApi';
 import './WellnessPage.css';
-import { clearAuth } from '../../utils/authUtils';
+import { getUserEmail, clearAuth } from '../../utils/authUtils';
 
 export default function WellnessPage() {
+    const userEmail = getUserEmail();
     const [todayLog, setTodayLog] = useState<HealthLogResponse | null>(null);
     const [readiness, setReadiness] = useState<ReadinessResponse | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -24,6 +25,7 @@ export default function WellnessPage() {
 
     // Form state - Morning defaults (activity/hydration logged throughout day)
     const [formData, setFormData] = useState<HealthLogInput>({
+        user_email: userEmail || undefined,
         sleep_hours: 7,
         sleep_quality: 7,
         energy_level: 7,
@@ -44,10 +46,14 @@ export default function WellnessPage() {
     // Fetch today's log and readiness on mount
     useEffect(() => {
         async function fetchData() {
+            if (!userEmail) {
+                setIsLoading(false);
+                return;
+            }
             try {
                 const [log, score] = await Promise.all([
-                    getTodayHealth(),
-                    getReadiness()
+                    getTodayHealth(userEmail),
+                    getReadiness(userEmail)
                 ]);
                 setTodayLog(log);
                 setReadiness(score);
@@ -55,8 +61,9 @@ export default function WellnessPage() {
                 // Pre-fill form if log exists
                 if (log) {
                     setFormData({
-                        sleep_hours: log.sleep_hours,
-                        sleep_quality: log.sleep_quality,
+                        user_email: userEmail,
+                        sleep_hours: log.sleep_hours || 7,
+                        sleep_quality: log.sleep_quality || 7,
                         energy_level: log.energy_level,
                         stress_level: log.stress_level,
                         mood_score: log.mood_score,

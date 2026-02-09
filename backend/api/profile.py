@@ -49,12 +49,15 @@ def update_profile(data: UserProfileUpdate, db: Session = Depends(get_db)):
 
 
 @router.get("/user", response_model=UserResponse)
-def get_user(db: Session = Depends(get_db)):
+def get_user(email: str | None = None, db: Session = Depends(get_db)):
     """get basic user info"""
     
-    user_id = UUID(TEST_USER_ID)
-    
-    user = db.query(User).filter(User.id == user_id).first()
+    if email:
+        user = db.query(User).filter(User.email == email).first()
+    else:
+        # Fallback to test user if no email provided (for dev compatibility)
+        user_id = UUID(TEST_USER_ID)
+        user = db.query(User).filter(User.id == user_id).first()
     
     if not user:
         raise HTTPException(status_code=404, detail="user not found")

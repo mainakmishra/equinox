@@ -60,7 +60,7 @@ export default function TodosPage() {
         try {
             const updatedTodo = await updateTodo(todo.id, {
                 completed: !todo.completed
-            });
+            }, user_email || undefined);
             setTodos(todos.map(t => t.id === todo.id ? updatedTodo : t));
         } catch (err) {
             console.error('Failed to update todo:', err);
@@ -71,7 +71,7 @@ export default function TodosPage() {
     const handleDeleteTodo = async (todoId: string) => {
         if (!confirm('Are you sure you want to delete this todo?')) return;
         try {
-            await deleteTodo(todoId);
+            await deleteTodo(todoId, user_email || undefined);
             setTodos(todos.filter(t => t.id !== todoId));
         } catch (err) {
             console.error('Failed to delete todo:', err);

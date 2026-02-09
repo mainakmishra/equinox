@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { getUserEmail, isAuthenticated, clearAuth } from '../../utils/authUtils';
 import { generateBriefing, sendBriefingEmail, type BriefingResponse } from '../../api/briefingApi';
+import { fetchTodos, type Todo } from '../../api/todosApi';
 import SignedInNavbar from '../../components/Navbar/SignedInNavbar';
 import './BriefingPage.css';
 
@@ -10,6 +11,11 @@ export default function BriefingPage() {
     const [sendingEmail, setSendingEmail] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [emailSent, setEmailSent] = useState(false);
+
+    // Tasks state
+    const [tasks, setTasks] = useState<Todo[]>([]);
+    const [showTasks, setShowTasks] = useState(false);
+    const [loadingTasks, setLoadingTasks] = useState(false);
 
     const userEmail = getUserEmail();
     const isLoggedIn = isAuthenticated();
@@ -28,15 +34,34 @@ export default function BriefingPage() {
         setLoading(true);
         setError(null);
         setEmailSent(false);
+        setShowTasks(false);
 
         try {
             const data = await generateBriefing(userEmail);
             setBriefing(data);
+
+            // Pre-fetch tasks if we have them
+            if (data.tasks_count > 0) {
+                fetchTasks();
+            }
         } catch (err) {
             console.error('Briefing generation error:', err);
             setError('Failed to generate briefing. Please try again.');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchTasks = async () => {
+        if (!userEmail) return;
+        setLoadingTasks(true);
+        try {
+            const data = await fetchTodos(userEmail);
+            setTasks(data.filter(t => !t.completed));
+        } catch (err) {
+            console.error('Failed to fetch tasks:', err);
+        } finally {
+            setLoadingTasks(false);
         }
     };
 
@@ -110,14 +135,41 @@ export default function BriefingPage() {
                                     </span>
                                 </div>
 
-                                <div className="briefing-item">
+                                <div
+                                    className="briefing-item clickable"
+                                    onClick={() => setShowTasks(!showTasks)}
+                                    style={{ cursor: 'pointer', borderBottom: showTasks ? 'none' : '' }}
+                                >
                                     <span className="briefing-icon">✅</span>
                                     <span className="briefing-text">
                                         {briefing.schedule_updated
-                                            ? `${briefing.tasks_count} Task${briefing.tasks_count !== 1 ? 's' : ''} Today`
+                                            ? `${briefing.tasks_count} Task${briefing.tasks_count !== 1 ? 's' : ''} Today (Click to ${showTasks ? 'hide' : 'view'})`
                                             : 'No tasks scheduled'}
                                     </span>
                                 </div>
+
+                                {showTasks && (
+                                    <div className="briefing-tasks-list" style={{
+                                        padding: '0 1rem 1rem 3.5rem',
+                                        marginTop: '-0.5rem',
+                                        marginBottom: '1rem',
+                                        borderBottom: '1px solid var(--color-border)'
+                                    }}>
+                                        {loadingTasks ? (
+                                            <p className="text-secondary">Loading tasks...</p>
+                                        ) : tasks.length > 0 ? (
+                                            <ul style={{ listStyle: 'disk', paddingLeft: '1rem' }}>
+                                                {tasks.map(task => (
+                                                    <li key={task.id} style={{ marginBottom: '0.4rem', color: 'var(--color-text-secondary)' }}>
+                                                        {task.text}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <p className="text-secondary">No pending tasks found.</p>
+                                        )}
+                                    </div>
+                                )}
                             </div>
 
                             {briefing.summary && (
