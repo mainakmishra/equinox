@@ -3,7 +3,7 @@
         "."
     ],
     "graphs": {
-        "supervisor": "supervisor.graph:create_supervisor_graph"
+        "supervisor": "supervisor.supervisor_agent:create_supervisor_graph"
     },
     "env": ".env"
 }
