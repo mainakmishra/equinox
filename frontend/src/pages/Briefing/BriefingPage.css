@@ -121,6 +121,38 @@
     margin: 0;
 }
 
+/* Success State */
+.briefing-success {
+    background: rgba(52, 199, 89, 0.1);
+    border: 1px solid rgba(52, 199, 89, 0.3);
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin-top: 24px;
+    animation: fadeInUp 0.3s ease;
+}
+
+.briefing-success p {
+    color: #34c759;
+    font-size: var(--text-callout);
+    margin: 0;
+    font-weight: var(--font-weight-medium);
+}
+
+/* Action Buttons */
+.briefing-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.btn-send-email {
+    flex: 1;
+}
+
+.btn-new-briefing {
+    flex: 1;
+}
+
 /* Sign In Prompt */
 .briefing-sign-in-prompt {
     background: var(--color-card-bg);

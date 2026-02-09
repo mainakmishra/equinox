@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { getUserEmail, isAuthenticated, clearAuth } from '../../utils/authUtils';
-import { generateBriefing, type BriefingResponse } from '../../api/briefingApi';
+import { generateBriefing, sendBriefingEmail, type BriefingResponse } from '../../api/briefingApi';
 import SignedInNavbar from '../../components/Navbar/SignedInNavbar';
 import './BriefingPage.css';
 
 export default function BriefingPage() {
     const [briefing, setBriefing] = useState<BriefingResponse | null>(null);
     const [loading, setLoading] = useState(false);
+    const [sendingEmail, setSendingEmail] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [emailSent, setEmailSent] = useState(false);
 
     const userEmail = getUserEmail();
     const isLoggedIn = isAuthenticated();
@@ -25,6 +27,7 @@ export default function BriefingPage() {
 
         setLoading(true);
         setError(null);
+        setEmailSent(false);
 
         try {
             const data = await generateBriefing(userEmail);
@@ -34,6 +37,23 @@ export default function BriefingPage() {
             setError('Failed to generate briefing. Please try again.');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleSendEmail = async () => {
+        if (!userEmail) return;
+
+        setSendingEmail(true);
+        setError(null);
+
+        try {
+            await sendBriefingEmail(userEmail);
+            setEmailSent(true);
+        } catch (err) {
+            console.error('Email send error:', err);
+            setError('Failed to send email. Please re-authenticate with Google.');
+        } finally {
+            setSendingEmail(false);
         }
     };
 
@@ -60,6 +80,12 @@ export default function BriefingPage() {
                     {error && (
                         <div className="briefing-error">
                             <p>{error}</p>
+                        </div>
+                    )}
+
+                    {emailSent && (
+                        <div className="briefing-success">
+                            <p>✅ Briefing sent to your email!</p>
                         </div>
                     )}
 
@@ -100,13 +126,22 @@ export default function BriefingPage() {
                                 </div>
                             )}
 
-                            <button
-                                className="btn btn--secondary btn-new-briefing"
-                                onClick={handleGenerateBriefing}
-                                disabled={loading}
-                            >
-                                Generate New Briefing
-                            </button>
+                            <div className="briefing-actions">
+                                <button
+                                    className="btn btn--primary btn-send-email"
+                                    onClick={handleSendEmail}
+                                    disabled={sendingEmail || emailSent}
+                                >
+                                    {sendingEmail ? 'Sending...' : emailSent ? 'Email Sent ✓' : '📤 Send to Email'}
+                                </button>
+                                <button
+                                    className="btn btn--secondary btn-new-briefing"
+                                    onClick={handleGenerateBriefing}
+                                    disabled={loading}
+                                >
+                                    Refresh Briefing
+                                </button>
+                            </div>
                         </div>
                     )}
 

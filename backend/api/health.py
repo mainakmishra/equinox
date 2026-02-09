@@ -77,7 +77,7 @@ def calculate_readiness(log: HealthLog, profile: UserProfile = None) -> dict:
 
 
 @router.post("/log", response_model=HealthLogResponse)
-def log_health(data: HealthLogCreate, db: Session = Depends(get_db)):
+async def log_health(data: HealthLogCreate, db: Session = Depends(get_db)):
     """log or update health data for a date"""
     
     user_id = UUID(TEST_USER_ID)
@@ -88,6 +88,8 @@ def log_health(data: HealthLogCreate, db: Session = Depends(get_db)):
         HealthLog.user_id == user_id,
         HealthLog.date == log_date
     ).first()
+    
+    is_new_log = existing is None
     
     if existing:
         # update
@@ -110,6 +112,20 @@ def log_health(data: HealthLogCreate, db: Session = Depends(get_db)):
     
     db.commit()
     db.refresh(log)
+    
+    # Trigger auto-email briefing if this is today's first log
+    if is_new_log and log_date == date.today():
+        try:
+            from api.briefing import send_briefing_email_internal
+            # Get user email from the User table
+            user = db.query(User).filter(User.id == user_id).first()
+            if user and user.email:
+                # Send briefing email in background (fire and forget)
+                import asyncio
+                asyncio.create_task(send_briefing_email_internal(user.email))
+        except Exception as e:
+            # Don't fail the health log if email fails
+            print(f"Auto-email failed: {e}")
     
     return log
 
