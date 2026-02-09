@@ -1,18 +1,67 @@
-
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { ThemeToggle } from '../ThemeToggle/ThemeToggle';
 import './SignedNavbar.css';
 
 export default function SignedInNavbar({ onSignOut }: { onSignOut?: () => void }) {
+    const location = useLocation();
+
+    const isActive = (path: string) => location.pathname === path;
+
     return (
-        <nav className="navbar">
-            <div className="navbar-links">
-                <Link className="navbar-link" to="/chat">Chat</Link>
-                <Link className="navbar-link" to="/agents">Agents</Link>
-                <Link className="navbar-link" to="/wellness">Wellness</Link>
-                <Link className="navbar-link" to="/settings">Settings</Link>
-                <Link className="navbar-link" to="/notes">Notes</Link>
-                <Link className="navbar-link" to="/todos">Todos</Link>
-                <button className="signout-btn" onClick={onSignOut}>Sign Out</button>
+        <nav className="signed-navbar">
+            <div className="signed-navbar__inner">
+                {/* Logo */}
+                <Link to="/" className="signed-navbar__logo">
+                    Equinox
+                </Link>
+
+                {/* Navigation Links */}
+                <div className="signed-navbar__links">
+                    <Link
+                        className={`signed-navbar__link ${isActive('/chat') ? 'active' : ''}`}
+                        to="/chat"
+                    >
+                        Chat
+                    </Link>
+                    <Link
+                        className={`signed-navbar__link ${isActive('/agents') ? 'active' : ''}`}
+                        to="/agents"
+                    >
+                        Agents
+                    </Link>
+                    <Link
+                        className={`signed-navbar__link ${isActive('/wellness') ? 'active' : ''}`}
+                        to="/wellness"
+                    >
+                        Wellness
+                    </Link>
+                    <Link
+                        className={`signed-navbar__link ${isActive('/notes') ? 'active' : ''}`}
+                        to="/notes"
+                    >
+                        Notes
+                    </Link>
+                    <Link
+                        className={`signed-navbar__link ${isActive('/todos') ? 'active' : ''}`}
+                        to="/todos"
+                    >
+                        Todos
+                    </Link>
+                    <Link
+                        className={`signed-navbar__link ${isActive('/settings') ? 'active' : ''}`}
+                        to="/settings"
+                    >
+                        Settings
+                    </Link>
+                </div>
+
+                {/* Actions */}
+                <div className="signed-navbar__actions">
+                    <ThemeToggle />
+                    <button className="signed-navbar__signout" onClick={onSignOut}>
+                        Sign Out
+                    </button>
+                </div>
             </div>
         </nav>
     );

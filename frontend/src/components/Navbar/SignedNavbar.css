@@ -1,144 +1,130 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* =============================================
+   SIGNED-IN NAVBAR - Apple-Inspired Design
+   ============================================= */
+
+.signed-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: var(--color-navbar-bg);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--color-navbar-border);
 }
 
-body, html, #root {
+.signed-navbar__inner {
+  max-width: var(--container-wide);
   width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-.navbar {
-  width: 100vw;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 2rem;
-  position: fixed;
-  background: rgba(13, 13, 15, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
-  top: 0;
-  z-index: 2000;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  height: 48px;
+  padding: 0 var(--space-4);
 }
 
-.navbar-title {
-  color: #fff;
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: 1px;
-  background: linear-gradient(135deg, #8b5cf6, #3b82f6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  transition: transform 0.2s;
-}
-
-.navbar-title:hover {
-  transform: scale(1.02);
-}
-
-.navbar-links {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.navbar-link {
-  color: #e0e0e0;
+/* Logo */
+.signed-navbar__logo {
+  font-size: var(--text-headline);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
   text-decoration: none;
-  font-size: 1rem;
-  font-weight: 500;
-  padding: 0.6rem 1.2rem;
-  border-radius: 0.5rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
+  letter-spacing: var(--tracking-tight);
+  flex-shrink: 0;
 }
 
-.navbar-link::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.1));
-  opacity: 0;
-  transition: opacity 0.3s;
-  z-index: -1;
+.signed-navbar__logo:hover {
+  color: var(--color-text-primary);
 }
 
-.navbar-link:hover {
-  color: #a78bfa;
-  background-color: rgba(139, 92, 246, 0.1);
-  transform: translateY(-2px);
+/* Navigation Links */
+.signed-navbar__links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
 }
 
-.navbar-link:hover::before {
-  opacity: 1;
+.signed-navbar__link {
+  font-size: var(--text-caption);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: var(--btn-radius);
+  transition: all var(--transition-fast);
 }
 
-.navbar-link:active {
-  transform: translateY(0);
+.signed-navbar__link:hover {
+  color: var(--color-text-primary);
+  background: var(--color-accent-light);
 }
 
-/* Active link style - add this class via React Router */
-.navbar-link.active {
-  color: #8b5cf6;
-  background: rgba(139, 92, 246, 0.15);
-  font-weight: 600;
+.signed-navbar__link.active {
+  color: var(--color-text-primary);
+  background: var(--color-accent-light);
+  font-weight: var(--font-weight-medium);
 }
 
-.signout-btn {
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.05);
-  color: white;
+/* Actions */
+.signed-navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+
+/* Sign Out Button */
+.signed-navbar__signout {
+  padding: 6px 14px;
+  font-size: var(--text-caption);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--btn-radius);
   cursor: pointer;
+  transition: all var(--transition-fast);
 }
 
+.signed-navbar__signout:hover {
+  color: var(--color-text-primary);
+  background: var(--color-accent-light);
+  border-color: transparent;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-  .navbar {
-    padding: 0.75rem 1rem;
+  .signed-navbar__inner {
+    padding: 0 var(--space-3);
+    height: 44px;
   }
-  
-  .navbar-title {
-    font-size: 1.2rem;
+
+  .signed-navbar__links {
+    gap: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
-  
-  .navbar-links {
-    gap: 0.25rem;
+
+  .signed-navbar__links::-webkit-scrollbar {
+    display: none;
   }
-  
-  .navbar-link {
-    font-size: 0.9rem;
-    padding: 0.5rem 0.9rem;
+
+  .signed-navbar__link {
+    font-size: 11px;
+    padding: 4px 8px;
+    white-space: nowrap;
+  }
+
+  .signed-navbar__logo {
+    font-size: var(--text-body);
+  }
+
+  .signed-navbar__signout {
+    font-size: 11px;
+    padding: 4px 10px;
   }
 }
-
-@media (max-width: 480px) {
-  .navbar {
-    padding: 0.5rem 1rem;
-  }
-  
-  .navbar-title {
-    font-size: 1.1rem;
-  }
-  
-  .navbar-links {
-    gap: 0.15rem;
-  }
-  
-  .navbar-link {
-    font-size: 0.85rem;
-    padding: 0.4rem 0.7rem;
-  }
-}
-

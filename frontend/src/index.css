@@ -1,73 +1,329 @@
+/* =============================================
+   EQUINOX - Apple-Inspired Design System
+   Light/Dark Mode with SF Pro Typography
+   ============================================= */
+
+/* Theme Colors - Light Mode (Default) */
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  /* Backgrounds */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f5f5f7;
+  --color-bg-tertiary: #fbfbfd;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* Text */
+  --color-text-primary: #1d1d1f;
+  --color-text-secondary: #86868b;
+  --color-text-tertiary: #6e6e73;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* Borders & Dividers */
+  --color-border: rgba(0, 0, 0, 0.08);
+  --color-border-hover: rgba(0, 0, 0, 0.12);
+  --color-divider: rgba(0, 0, 0, 0.06);
+
+  /* Accent - Apple Blue */
+  --color-accent: #0071e3;
+  --color-accent-hover: #0077ed;
+  --color-accent-light: rgba(0, 113, 227, 0.1);
+
+  /* Surfaces */
+  --color-card-bg: #ffffff;
+  --color-card-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  --color-card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.08);
+
+  /* Navbar */
+  --color-navbar-bg: rgba(255, 255, 255, 0.72);
+  --color-navbar-border: rgba(0, 0, 0, 0.08);
+
+  /* Chat */
+  --color-user-bubble: #0071e3;
+  --color-bot-bubble: #f5f5f7;
+  --color-input-bg: #ffffff;
+
+  /* Color scheme */
+  color-scheme: light;
 }
 
-a {
-  font-weight: 500;
-  color: #5d8a66;
-  text-decoration: inherit;
+/* Theme Colors - Dark Mode */
+[data-theme="dark"] {
+  /* Backgrounds */
+  --color-bg-primary: #000000;
+  --color-bg-secondary: #1c1c1e;
+  --color-bg-tertiary: #2c2c2e;
+
+  /* Text */
+  --color-text-primary: #f5f5f7;
+  --color-text-secondary: #a1a1a6;
+  --color-text-tertiary: #8e8e93;
+
+  /* Borders & Dividers */
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-hover: rgba(255, 255, 255, 0.16);
+  --color-divider: rgba(255, 255, 255, 0.08);
+
+  /* Accent - Apple Blue (Dark Mode) */
+  --color-accent: #0a84ff;
+  --color-accent-hover: #409cff;
+  --color-accent-light: rgba(10, 132, 255, 0.15);
+
+  /* Surfaces */
+  --color-card-bg: #1c1c1e;
+  --color-card-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  --color-card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.4);
+
+  /* Navbar */
+  --color-navbar-bg: rgba(0, 0, 0, 0.72);
+  --color-navbar-border: rgba(255, 255, 255, 0.1);
+
+  /* Chat */
+  --color-user-bubble: #0a84ff;
+  --color-bot-bubble: #2c2c2e;
+  --color-input-bg: #1c1c1e;
+
+  /* Color scheme */
+  color-scheme: dark;
 }
 
-a:hover {
-  color: #4a7c59;
+/* =============================================
+   TYPOGRAPHY - SF Pro Font Stack
+   ============================================= */
+:root {
+  /* Font Family */
+  --font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display',
+    'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+
+  /* Type Scale */
+  --text-hero: clamp(48px, 8vw, 80px);
+  --text-display: clamp(32px, 5vw, 56px);
+  --text-title: clamp(24px, 3vw, 32px);
+  --text-headline: 21px;
+  --text-body: 17px;
+  --text-callout: 15px;
+  --text-caption: 12px;
+
+  /* Font Weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Line Heights */
+  --line-height-tight: 1.1;
+  --line-height-snug: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.7;
+
+  /* Letter Spacing */
+  --tracking-tight: -0.022em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.012em;
+}
+
+/* =============================================
+   SPACING SYSTEM - 8px Base Unit
+   ============================================= */
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+  --space-6: 48px;
+  --space-7: 64px;
+  --space-8: 80px;
+  --space-9: 120px;
+  --space-10: 160px;
+
+  /* Section Padding */
+  --section-padding: clamp(80px, 12vw, 160px);
+
+  /* Container */
+  --container-max: 980px;
+  --container-wide: 1200px;
+}
+
+/* =============================================
+   COMPONENT TOKENS
+   ============================================= */
+:root {
+  /* Buttons */
+  --btn-radius: 980px;
+  --btn-radius-sm: 8px;
+  --btn-padding: 12px 24px;
+  --btn-padding-sm: 8px 16px;
+
+  /* Cards */
+  --card-radius: 18px;
+  --card-radius-sm: 12px;
+
+  /* Inputs */
+  --input-radius: 12px;
+  --input-height: 48px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 400ms ease;
+}
+
+/* =============================================
+   BASE RESET & GLOBAL STYLES
+   ============================================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+  font-family: var(--font-family);
+  font-size: var(--text-body);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body,
+html,
+#root {
+  width: 100%;
   min-height: 100vh;
+  margin: 0;
+  padding: 0;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* Links */
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: color var(--transition-fast);
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+a:hover {
+  color: var(--color-accent-hover);
+}
+
+/* Focus States */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+  background: var(--color-accent-light);
+  color: var(--color-text-primary);
+}
+
+/* =============================================
+   UTILITY CLASSES
+   ============================================= */
+.container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+.container--wide {
+  max-width: var(--container-wide);
+}
+
+/* Typography Utilities */
+.text-hero {
+  font-size: var(--text-hero);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--tracking-tight);
+}
+
+.text-display {
+  font-size: var(--text-display);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+  letter-spacing: var(--tracking-tight);
+}
+
+.text-title {
+  font-size: var(--text-title);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+}
+
+.text-secondary {
+  color: var(--color-text-secondary);
+}
+
+.text-tertiary {
+  color: var(--color-text-tertiary);
+}
+
+/* =============================================
+   BUTTON STYLES
+   ============================================= */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--btn-padding);
+  font-size: var(--text-body);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  border-radius: var(--btn-radius);
+  border: none;
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: all var(--transition-normal);
+  text-decoration: none;
 }
 
-button:hover {
-  border-color: #5d8a66;
+.btn--primary {
+  background: var(--color-accent);
+  color: #ffffff;
 }
 
-button:focus,
-button:focus-visible {
-  outline: 2px solid #5d8a66;
+.btn--primary:hover {
+  background: var(--color-accent-hover);
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
+.btn--secondary {
+  background: transparent;
+  color: var(--color-accent);
+}
 
-  a:hover {
-    color: #747bff;
-  }
+.btn--secondary:hover {
+  background: var(--color-accent-light);
+}
 
-  button {
-    background-color: #f9f9f9;
-  }
+.btn--ghost {
+  background: transparent;
+  color: var(--color-text-secondary);
+}
+
+.btn--ghost:hover {
+  color: var(--color-text-primary);
+}
+
+/* =============================================
+   CARD STYLES
+   ============================================= */
+.card {
+  background: var(--color-card-bg);
+  border-radius: var(--card-radius);
+  box-shadow: var(--color-card-shadow);
+  transition: box-shadow var(--transition-normal);
+}
+
+.card:hover {
+  box-shadow: var(--color-card-shadow-hover);
 }
