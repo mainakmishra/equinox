@@ -10,6 +10,7 @@ import NotesPage from './pages/Productivity/NotesPage';
 import TodosPage from './pages/Productivity/TodosPage';
 import WellnessPage from './pages/Wellness/WellnessPage';
 import { Contact } from './pages/Contact/Contact';
+import BriefingPage from './pages/Briefing/BriefingPage';
 import HealthLogPopup from './components/HealthLogPopup/HealthLogPopup';
 import { getTodayHealth } from './api/healthApi';
 
@@ -60,6 +61,7 @@ function AppRoutes() {
         <Route path="/notes" element={<NotesPage />} />
         <Route path="/todos" element={<TodosPage />} />
         <Route path="/wellness" element={<WellnessPage />} />
+        <Route path="/briefing" element={<BriefingPage />} />
         <Route path="/contact" element={<Contact />} />
       </Routes>
 
