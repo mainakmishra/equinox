@@ -46,7 +46,18 @@ export default function ChatInterface() {
     const messagesContainerRef = useRef<HTMLDivElement>(null);
 
     // Initial setup: Redirect to /chat/:email/:threadId if params missing
+    // Also verify user can only access their own chats
     useEffect(() => {
+        const storedEmail = localStorage.getItem('user_email');
+
+        // Authorization check: If URL email doesn't match logged-in user, redirect
+        if (routeEmail && storedEmail && routeEmail !== storedEmail) {
+            // User is trying to access someone else's chat - redirect to their own new chat
+            const newThreadId = `t_${Date.now()}`;
+            navigate(`/chat/${storedEmail}/${newThreadId}`, { replace: true });
+            return;
+        }
+
         // If we have both, ensures local storage is synced
         if (routeEmail && threadId) {
             setAuth(routeEmail);
@@ -68,7 +79,6 @@ export default function ChatInterface() {
         }
 
         // If missing params, derive and redirect
-        const storedEmail = localStorage.getItem('user_email');
         const queryEmail = searchParams.get('email');
         const effectiveEmail = routeEmail || queryEmail || storedEmail;
 
@@ -80,8 +90,8 @@ export default function ChatInterface() {
                 navigate(`/chat/${effectiveEmail}/${newThreadId}`, { replace: true });
             }
         } else {
-            // No email found at all?? Maybe redirect home or stay here (empty state)
-            // For now, let's just wait for user to sign in
+            // No email found at all - redirect to home for sign in
+            navigate('/', { replace: true });
         }
     }, [routeEmail, threadId, navigate, searchParams]);
 
