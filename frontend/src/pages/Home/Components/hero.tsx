@@ -1,10 +1,17 @@
 import { ArrowRight, Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
 import { handleGoogleSignIn } from "../../../api/authApi";
 
 export function Hero() {
     return (
         <section className="hero">
-            {/* Multiple gradient glows for depth */}
+            {/* High-resolution background image */}
+            <div className="hero__bg-image" aria-hidden="true" />
+
+            {/* Grid overlay for texture */}
+            <div className="hero__grid" aria-hidden="true" />
+
+            {/* Gradient glow for additional depth */}
             <div className="hero__glow" />
 
             <div className="container hero__content">
@@ -36,9 +43,9 @@ export function Hero() {
                         Get Started Free
                         <ArrowRight className="icon--md" />
                     </button>
-                    <button type="button" className="btn btn--outline btn--lg">
-                        Watch Demo
-                    </button>
+                    <Link to="/contact" className="btn btn--outline btn--lg">
+                        Talk to Us
+                    </Link>
                 </div>
 
                 {/* Social proof */}

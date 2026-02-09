@@ -2,13 +2,19 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import "./Navbar.css";
 import { handleGoogleSignIn } from '../../api/authApi';
+import { ThemeToggle } from '../ThemeToggle/ThemeToggle';
 
 export function Navbar() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     return (
         <header className="navbar">
-            <nav className="container navbar__inner">
+            <nav className="navbar__inner">
+                {/* Logo */}
+                <a href="/" className="navbar__logo">
+                    Equinox
+                </a>
+
                 {/* Desktop Navigation */}
                 <div className="navbar__links">
                     <a href="#features" className="navbar__link">
@@ -22,10 +28,11 @@ export function Navbar() {
                     </a>
                 </div>
 
-                {/* Desktop CTA */}
-                <div className="navbar__cta">
+                {/* Desktop Actions */}
+                <div className="navbar__actions">
+                    <ThemeToggle />
                     <button
-                        className="signin-btn"
+                        className="navbar__signin"
                         onClick={handleGoogleSignIn}
                     >
                         Sign In
@@ -39,13 +46,13 @@ export function Navbar() {
                     onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                     aria-label="Toggle menu"
                 >
-                    {mobileMenuOpen ? <X className="icon" /> : <Menu className="icon" />}
+                    {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
                 </button>
             </nav>
 
             {/* Mobile Navigation */}
             {mobileMenuOpen && (
-                <div className="container navbar__mobile-menu">
+                <div className="navbar__mobile-menu">
                     <div className="navbar__mobile-links">
                         <a href="#features" className="navbar__mobile-link">
                             Features
@@ -58,9 +65,10 @@ export function Navbar() {
                         </a>
                     </div>
 
-                    <div className="navbar__mobile-cta">
+                    <div className="navbar__mobile-actions">
+                        <ThemeToggle />
                         <button
-                            className="btn btn--ghost btn--left"
+                            className="navbar__signin"
                             onClick={handleGoogleSignIn}
                         >
                             Sign In
