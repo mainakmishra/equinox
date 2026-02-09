@@ -1,10 +1,16 @@
+/* =============================================
+   HOMEPAGE - Clean Professional Design
+   ============================================= */
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-body, html, #root {
+body,
+html,
+#root {
   width: 100%;
   height: 100%;
   margin: 0;
@@ -19,23 +25,25 @@ body, html, #root {
 
 .homepage-content {
   width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 4rem 2rem;
 }
 
+/* Hero Section */
 .hero-section {
   text-align: center;
   margin-bottom: 6rem;
-  padding: 2rem 0;
+  padding: 4rem 0;
 }
 
 .hero-badge {
   display: inline-block;
   padding: 0.5rem 1.5rem;
-  background: rgba(139, 92, 246, 0.1);
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  background: var(--color-accent-light);
+  border: 1px solid var(--color-accent);
   border-radius: 2rem;
-  color: #a78bfa;
+  color: var(--color-accent);
   font-size: 0.875rem;
   font-weight: 600;
   margin-bottom: 1.5rem;
@@ -43,20 +51,17 @@ body, html, #root {
 
 .hero-title {
   font-size: 4rem;
-  font-weight: 900;
+  font-weight: 800;
   margin-bottom: 1.5rem;
-  background: linear-gradient(135deg, #ffffff, #a78bfa);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  line-height: 1.2;
+  color: var(--color-text-primary);
+  line-height: 1.1;
 }
 
 .hero-subtitle {
   font-size: 1.25rem;
-  color: #9ca3af;
+  color: var(--color-text-secondary);
   margin-bottom: 2.5rem;
-  max-width: 700px;
+  max-width: 600px;
   margin-left: auto;
   margin-right: auto;
   line-height: 1.6;
@@ -72,19 +77,38 @@ body, html, #root {
 .primary-cta {
   padding: 1rem 2rem;
   border: none;
-  border-radius: 0.75rem;
+  border-radius: 12px;
+  background: var(--color-accent);
   color: white;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.2s;
 }
 
 .primary-cta:hover {
+  background: var(--color-accent-hover);
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
 }
 
+.secondary-cta {
+  padding: 1rem 2rem;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.secondary-cta:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* Capabilities Section */
 .capabilities-section {
   margin-bottom: 6rem;
 }
@@ -94,12 +118,12 @@ body, html, #root {
   font-weight: 700;
   text-align: center;
   margin-bottom: 1rem;
-  color: #ffffff;
+  color: var(--color-text-primary);
 }
 
 .section-subtitle {
   font-size: 1.125rem;
-  color: #9ca3af;
+  color: var(--color-text-secondary);
   text-align: center;
   margin-bottom: 3rem;
 }
@@ -112,40 +136,43 @@ body, html, #root {
 }
 
 .capability-card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
+  background: var(--color-card-bg);
   padding: 2.5rem;
-  border-radius: 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  border: 1px solid var(--color-border);
   transition: all 0.3s;
   text-align: center;
 }
 
 .capability-card:hover {
-  transform: translateY(-8px);
-  border-color: rgba(139, 92, 246, 0.3);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  transform: translateY(-4px);
+  border-color: var(--color-accent);
+  box-shadow: var(--color-card-shadow-hover);
 }
 
 .capability-icon {
-  width: 80px;
-  height: 80px;
-  border-radius: 1.5rem;
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.5rem;
+  font-size: 2rem;
   margin: 0 auto 1.5rem;
+  background: var(--color-accent-light);
+  border: 1px solid var(--color-accent);
 }
 
-.capability-icon.purple {
-  background: rgba(139, 92, 246, 0.1);
-  border: 1px solid rgba(139, 92, 246, 0.3);
+.capability-icon.purple,
+.capability-icon.orange {
+  background: var(--color-accent-light);
+  border: 1px solid var(--color-accent);
 }
 
-.capability-icon.blue {
-  background: rgba(59, 130, 246, 0.1);
-  border: 1px solid rgba(59, 130, 246, 0.3);
+.capability-icon.blue,
+.capability-icon.amber {
+  background: var(--color-secondary-light);
+  border: 1px solid var(--color-secondary);
 }
 
 .capability-icon.green {
@@ -156,17 +183,17 @@ body, html, #root {
 .capability-card h3 {
   font-size: 1.5rem;
   margin-bottom: 1rem;
-  color: #ffffff;
+  color: var(--color-text-primary);
 }
 
 .capability-card p {
-  color: #9ca3af;
+  color: var(--color-text-secondary);
   line-height: 1.6;
   margin-bottom: 1.5rem;
 }
 
 .capability-link {
-  color: #a78bfa;
+  color: var(--color-accent);
   text-decoration: none;
   font-weight: 600;
   font-size: 1rem;
@@ -174,29 +201,31 @@ body, html, #root {
   display: inline-block;
 }
 
-.purple-link:hover {
-  color: #8b5cf6;
-  transform: translateX(4px);
+.capability-link:hover,
+.purple-link:hover,
+.orange-link:hover {
+  color: var(--color-accent-hover);
 }
 
-.blue-link {
-  color: #60a5fa;
+.blue-link,
+.amber-link {
+  color: var(--color-secondary);
 }
 
-.blue-link:hover {
-  color: #3b82f6;
-  transform: translateX(4px);
+.blue-link:hover,
+.amber-link:hover {
+  color: var(--color-secondary-hover);
 }
 
 .green-link {
-  color: #4ade80;
+  color: #22c55e;
 }
 
 .green-link:hover {
-  color: #22c55e;
-  transform: translateX(4px);
+  color: #16a34a;
 }
 
+/* Sponsors Section */
 .sponsors-section {
   text-align: center;
   padding: 3rem 0;
@@ -210,44 +239,41 @@ body, html, #root {
 }
 
 .sponsor-card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
   padding: 2.5rem 2rem;
-  border-radius: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
   font-size: 1.25rem;
   font-weight: 600;
-  color: #9ca3af;
+  color: var(--color-text-secondary);
   transition: all 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .sponsor-card:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(139, 92, 246, 0.3);
-  color: #e0e0e0;
+  border-color: var(--color-accent);
+  color: var(--color-text-primary);
   transform: translateY(-4px);
 }
 
+/* Scrollbar */
 .homepage::-webkit-scrollbar {
   width: 8px;
 }
 
 .homepage::-webkit-scrollbar-track {
-  background: rgba(26, 26, 26, 0.5);
+  background: var(--color-bg-secondary);
 }
 
 .homepage::-webkit-scrollbar-thumb {
-  background: rgba(139, 92, 246, 0.3);
+  background: var(--color-border);
   border-radius: 4px;
 }
 
 .homepage::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 92, 246, 0.5);
+  background: var(--color-text-tertiary);
 }
 
+/* Responsive */
 @media (max-width: 768px) {
   .hero-title {
     font-size: 2.5rem;

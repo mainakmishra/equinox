@@ -1,10 +1,8 @@
 /* =============================================
-   CHAT PAGE - Enhanced with Animations
+   CHAT PAGE - Clean Professional Design
    ============================================= */
 
-/* =============================================
-   ANIMATIONS
-   ============================================= */
+/* Animations */
 @keyframes fade-in-up {
   from {
     opacity: 0;
@@ -20,93 +18,42 @@
 @keyframes message-appear {
   from {
     opacity: 0;
-    transform: translateY(10px) scale(0.98);
+    transform: translateY(10px);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
-@keyframes pulse-soft {
+@keyframes typing-bounce {
 
   0%,
+  60%,
   100% {
-    opacity: 0.5;
+    transform: translateY(0);
+    opacity: 0.4;
   }
 
-  50% {
+  30% {
+    transform: translateY(-8px);
     opacity: 1;
   }
 }
 
-@keyframes float-subtle {
-
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-5px);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-/* =============================================
-   CHAT CONTAINER
-   ============================================= */
+/* Chat Container */
 .chat-container {
   display: flex;
   flex-direction: column;
   width: 100%;
   height: 100vh;
   background: var(--color-bg-primary);
-  padding-top: 48px;
+  padding-top: 56px;
   position: relative;
-  overflow: hidden;
 }
 
-/* Subtle background gradient orbs */
-.chat-container::before,
-.chat-container::after {
-  content: '';
-  position: fixed;
-  border-radius: 50%;
-  filter: blur(100px);
-  pointer-events: none;
-  opacity: 0.5;
-}
-
-.chat-container::before {
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(0, 113, 227, 0.06) 0%, transparent 70%);
-  top: -200px;
-  right: -100px;
-}
-
-.chat-container::after {
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(147, 51, 234, 0.05) 0%, transparent 70%);
-  bottom: -150px;
-  left: -100px;
-}
-
-/* =============================================
-   MESSAGES CONTAINER
-   ============================================= */
+/* Messages Container */
 .messages-container {
   flex: 1;
   overflow-y: auto;
@@ -118,8 +65,6 @@
   max-width: 800px;
   width: 100%;
   margin: 0 auto;
-  position: relative;
-  z-index: 1;
 }
 
 .messages-container::-webkit-scrollbar {
@@ -133,16 +78,9 @@
 .messages-container::-webkit-scrollbar-thumb {
   background: var(--color-border);
   border-radius: 3px;
-  transition: background 0.2s ease;
 }
 
-.messages-container::-webkit-scrollbar-thumb:hover {
-  background: var(--color-border-hover);
-}
-
-/* =============================================
-   EMPTY STATE - With floating animation
-   ============================================= */
+/* Empty State */
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -158,12 +96,11 @@
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-accent-light) 0%, rgba(0, 113, 227, 0.15) 100%);
+  background: var(--color-accent-light);
+  border: 2px solid var(--color-accent);
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: float-subtle 4s ease-in-out infinite;
-  box-shadow: 0 10px 30px rgba(0, 113, 227, 0.15);
 }
 
 .empty-sparkle {
@@ -185,7 +122,7 @@
   margin: 0;
 }
 
-/* Suggestion chips - Enhanced */
+/* Suggestion Chips */
 .suggestion-chips {
   display: flex;
   flex-wrap: wrap;
@@ -202,39 +139,20 @@
   border-radius: var(--btn-radius);
   font-size: var(--text-callout);
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.suggestion-chip::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, transparent 0%, rgba(0, 113, 227, 0.05) 100%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: all 0.2s;
 }
 
 .suggestion-chip:hover {
   background: var(--color-accent-light);
   border-color: var(--color-accent);
   color: var(--color-accent);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 113, 227, 0.15);
 }
 
-.suggestion-chip:hover::before {
-  opacity: 1;
-}
-
-/* =============================================
-   MESSAGES - With animations
-   ============================================= */
+/* Messages */
 .message {
   display: flex;
   width: 100%;
-  animation: message-appear 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: message-appear 0.4s ease;
 }
 
 .message.user {
@@ -256,7 +174,7 @@
   flex-direction: row-reverse;
 }
 
-/* Avatar - With glow effect */
+/* Avatar */
 .message-avatar {
   width: 36px;
   height: 36px;
@@ -265,17 +183,11 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.message:hover .message-avatar {
-  transform: scale(1.05);
 }
 
 .message.user .message-avatar {
-  background: linear-gradient(135deg, var(--color-accent) 0%, #2997ff 100%);
+  background: var(--color-accent);
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 113, 227, 0.25);
 }
 
 .message.bot .message-avatar {
@@ -284,37 +196,29 @@
   border: 1px solid var(--color-border);
 }
 
-/* Message bubble - Enhanced styling */
+/* Message Bubble */
 .message-bubble {
   padding: 14px 18px;
   border-radius: 20px;
   word-wrap: break-word;
   line-height: var(--line-height-normal);
   font-size: var(--text-body);
-  transition: box-shadow 0.2s ease;
 }
 
 .message.user .message-bubble {
-  background: linear-gradient(135deg, var(--color-user-bubble) 0%, #2997ff 100%);
+  background: var(--color-accent);
   color: #ffffff;
   border-bottom-right-radius: 6px;
-  box-shadow: 0 4px 15px rgba(0, 113, 227, 0.2);
-}
-
-.message.user:hover .message-bubble {
-  box-shadow: 0 8px 25px rgba(0, 113, 227, 0.3);
 }
 
 .message.bot .message-bubble {
-  background: var(--color-bot-bubble);
+  background: var(--color-bg-secondary);
   color: var(--color-text-primary);
   border-bottom-left-radius: 6px;
   border: 1px solid var(--color-border);
 }
 
-/* =============================================
-   MARKDOWN STYLING (Bot messages)
-   ============================================= */
+/* Markdown Styling */
 .message.bot .message-bubble p {
   margin: 0 0 12px 0;
 }
@@ -349,91 +253,28 @@
   overflow-x: auto;
   margin: 12px 0;
   border: 1px solid var(--color-border);
-  position: relative;
 }
 
 .message.bot .message-bubble pre code {
   background: none;
   padding: 0;
   color: var(--color-text-primary);
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-.message.bot .message-bubble blockquote {
-  border-left: 3px solid var(--color-accent);
-  padding: 10px 16px;
-  margin: 12px 0;
-  background: var(--color-accent-light);
-  border-radius: 0 10px 10px 0;
-  color: var(--color-text-secondary);
 }
 
 .message.bot .message-bubble strong {
   font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
 }
 
 .message.bot .message-bubble a {
   color: var(--color-accent);
   text-decoration: none;
-  transition: opacity 0.2s ease;
 }
 
 .message.bot .message-bubble a:hover {
-  opacity: 0.8;
   text-decoration: underline;
 }
 
-.message.bot .message-bubble h1,
-.message.bot .message-bubble h2,
-.message.bot .message-bubble h3,
-.message.bot .message-bubble h4 {
-  margin: 16px 0 8px 0;
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-}
-
-.message.bot .message-bubble h1 {
-  font-size: 1.3em;
-}
-
-.message.bot .message-bubble h2 {
-  font-size: 1.2em;
-}
-
-.message.bot .message-bubble h3 {
-  font-size: 1.1em;
-}
-
-.message.bot .message-bubble table {
-  border-collapse: collapse;
-  margin: 12px 0;
-  width: 100%;
-  font-size: var(--text-callout);
-}
-
-.message.bot .message-bubble th,
-.message.bot .message-bubble td {
-  border: 1px solid var(--color-border);
-  padding: 10px 12px;
-  text-align: left;
-}
-
-.message.bot .message-bubble th {
-  background: var(--color-bg-secondary);
-  font-weight: var(--font-weight-medium);
-}
-
-.message.bot .message-bubble hr {
-  border: none;
-  border-top: 1px solid var(--color-border);
-  margin: 16px 0;
-}
-
-/* =============================================
-   TYPING INDICATOR - Enhanced
-   ============================================= */
+/* Typing Indicator */
 .typing-bubble {
   padding: 16px 20px;
 }
@@ -464,35 +305,18 @@
   animation-delay: 0.4s;
 }
 
-@keyframes typing-bounce {
-
-  0%,
-  60%,
-  100% {
-    transform: translateY(0);
-    opacity: 0.4;
-  }
-
-  30% {
-    transform: translateY(-8px);
-    opacity: 1;
-  }
-}
-
-/* =============================================
-   INPUT SECTION - Glassmorphism style
-   ============================================= */
+/* Input Section */
 .input-section {
   position: sticky;
   bottom: 0;
   width: 100%;
-  background: linear-gradient(to top, var(--color-bg-primary) 80%, transparent);
+  background: var(--color-bg-primary);
   padding: var(--space-3) var(--space-4) var(--space-4);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-2);
-  z-index: 10;
+  border-top: 1px solid var(--color-border);
 }
 
 .input-wrapper {
@@ -501,15 +325,13 @@
   max-width: 800px;
   background: var(--color-input-bg);
   border: 1px solid var(--color-border);
-  border-radius: 28px;
+  border-radius: 24px;
   padding: 14px 56px 14px 22px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s;
 }
 
 .input-wrapper:focus-within {
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 4px var(--color-accent-light), 0 4px 20px rgba(0, 113, 227, 0.1);
 }
 
 .chat-input {
@@ -530,20 +352,7 @@
   color: var(--color-text-tertiary);
 }
 
-.chat-input::-webkit-scrollbar {
-  width: 4px;
-}
-
-.chat-input::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.chat-input::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 2px;
-}
-
-/* Send button - Enhanced */
+/* Send Button */
 .send-button {
   position: absolute;
   right: 10px;
@@ -552,45 +361,32 @@
   height: 40px;
   border-radius: 50%;
   border: none;
-  background: linear-gradient(135deg, var(--color-accent) 0%, #2997ff 100%);
+  background: var(--color-accent);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(0, 113, 227, 0.25);
+  transition: all 0.2s;
 }
 
 .send-button:hover:not(:disabled) {
-  transform: scale(1.08);
-  box-shadow: 0 6px 20px rgba(0, 113, 227, 0.35);
-}
-
-.send-button:active:not(:disabled) {
-  transform: scale(0.98);
+  background: var(--color-accent-hover);
+  transform: scale(1.05);
 }
 
 .send-button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
   background: var(--color-text-tertiary);
-  box-shadow: none;
 }
 
 .send-button svg {
   width: 20px;
   height: 20px;
-  transition: transform 0.2s ease;
 }
 
-.send-button:hover:not(:disabled) svg {
-  transform: translateX(2px);
-}
-
-/* =============================================
-   INPUT FOOTER
-   ============================================= */
+/* Input Footer */
 .input-footer {
   display: flex;
   align-items: center;
@@ -611,7 +407,7 @@
   color: var(--color-text-tertiary);
   font-size: var(--text-caption);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
 }
 
 .footer-button:hover {
@@ -619,32 +415,15 @@
   color: var(--color-accent);
 }
 
-.footer-button svg {
-  flex-shrink: 0;
-  transition: transform 0.2s ease;
-}
-
-.footer-button:hover svg {
-  transform: scale(1.1);
-}
-
 .footer-info {
   font-size: 11px;
   color: var(--color-text-tertiary);
 }
 
-/* =============================================
-   RESPONSIVE
-   ============================================= */
+/* Responsive */
 @media (max-width: 768px) {
   .chat-container {
-    padding-top: 44px;
-  }
-
-  .chat-container::before,
-  .chat-container::after {
-    width: 250px;
-    height: 250px;
+    padding-top: 52px;
   }
 
   .messages-container {
@@ -681,17 +460,5 @@
   .empty-sparkle {
     width: 32px;
     height: 32px;
-  }
-}
-
-/* Reduced motion preference */
-@media (prefers-reduced-motion: reduce) {
-
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
   }
 }

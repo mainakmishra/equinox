@@ -1,97 +1,111 @@
 /* =============================================
-   EQUINOX - Apple-Inspired Design System
-   Light/Dark Mode with SF Pro Typography
+   EQUINOX - Clean Professional Design System
+   Inspired by Base44 - Warm, Modern, No Blurs
    ============================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 /* Theme Colors - Light Mode (Default) */
 :root {
-  /* Backgrounds */
+  /* Backgrounds - Clean White */
   --color-bg-primary: #ffffff;
-  --color-bg-secondary: #f5f5f7;
-  --color-bg-tertiary: #fbfbfd;
+  --color-bg-secondary: #f8f9fa;
+  --color-bg-tertiary: #f1f3f5;
 
   /* Text */
-  --color-text-primary: #1d1d1f;
-  --color-text-secondary: #86868b;
-  --color-text-tertiary: #6e6e73;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #6b7280;
+  --color-text-tertiary: #9ca3af;
 
   /* Borders & Dividers */
-  --color-border: rgba(0, 0, 0, 0.08);
-  --color-border-hover: rgba(0, 0, 0, 0.12);
-  --color-divider: rgba(0, 0, 0, 0.06);
+  --color-border: #e5e7eb;
+  --color-border-hover: #d1d5db;
+  --color-divider: #f3f4f6;
 
-  /* Accent - Apple Blue */
-  --color-accent: #0071e3;
-  --color-accent-hover: #0077ed;
-  --color-accent-light: rgba(0, 113, 227, 0.1);
+  /* Primary Accent - Warm Coral/Orange */
+  --color-accent: #FF6B35;
+  --color-accent-hover: #FF5722;
+  --color-accent-light: rgba(255, 107, 53, 0.08);
+
+  /* Secondary - Warm Amber */
+  --color-secondary: #F59E0B;
+  --color-secondary-hover: #D97706;
+  --color-secondary-light: rgba(245, 158, 11, 0.1);
+
+  /* Gradient */
+  --gradient-primary: linear-gradient(135deg, #FF6B35 0%, #F59E0B 100%);
+  --gradient-warm: linear-gradient(180deg, #FFF7ED 0%, #ffffff 100%);
 
   /* Surfaces */
   --color-card-bg: #ffffff;
-  --color-card-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-  --color-card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --color-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --color-card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.12);
 
   /* Navbar */
-  --color-navbar-bg: rgba(255, 255, 255, 0.72);
-  --color-navbar-border: rgba(0, 0, 0, 0.08);
+  --color-navbar-bg: #ffffff;
+  --color-navbar-border: #e5e7eb;
 
   /* Chat */
-  --color-user-bubble: #0071e3;
-  --color-bot-bubble: #f5f5f7;
+  --color-user-bubble: #FF6B35;
+  --color-bot-bubble: #f8f9fa;
   --color-input-bg: #ffffff;
 
-  /* Color scheme */
   color-scheme: light;
 }
 
 /* Theme Colors - Dark Mode */
 [data-theme="dark"] {
   /* Backgrounds */
-  --color-bg-primary: #000000;
-  --color-bg-secondary: #1c1c1e;
-  --color-bg-tertiary: #2c2c2e;
+  --color-bg-primary: #0f0f0f;
+  --color-bg-secondary: #1a1a1a;
+  --color-bg-tertiary: #262626;
+
+  /* Subtle Gradient for Dark Mode */
+  background: radial-gradient(circle at 50% 0%, #1a1a1a 0%, #0f0f0f 100%);
+  background-attachment: fixed;
 
   /* Text */
-  --color-text-primary: #f5f5f7;
-  --color-text-secondary: #a1a1a6;
-  --color-text-tertiary: #8e8e93;
+  --color-text-primary: #f5f5f5;
+  --color-text-secondary: #a3a3a3;
+  --color-text-tertiary: #737373;
 
-  /* Borders & Dividers */
-  --color-border: rgba(255, 255, 255, 0.1);
-  --color-border-hover: rgba(255, 255, 255, 0.16);
-  --color-divider: rgba(255, 255, 255, 0.08);
+  /* Borders */
+  --color-border: #2e2e2e;
+  --color-border-hover: #404040;
+  --color-divider: #262626;
 
-  /* Accent - Apple Blue (Dark Mode) */
-  --color-accent: #0a84ff;
-  --color-accent-hover: #409cff;
-  --color-accent-light: rgba(10, 132, 255, 0.15);
+  /* Accent - Same warm colors */
+  --color-accent: #FF7849;
+  --color-accent-hover: #FF8A65;
+  --color-accent-light: rgba(255, 120, 73, 0.12);
+
+  --color-secondary: #FBBF24;
+  --color-secondary-hover: #FCD34D;
+  --color-secondary-light: rgba(251, 191, 36, 0.12);
 
   /* Surfaces */
-  --color-card-bg: #1c1c1e;
-  --color-card-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
-  --color-card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --color-card-bg: #1a1a1a;
+  --color-card-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --color-card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.5);
 
   /* Navbar */
-  --color-navbar-bg: rgba(0, 0, 0, 0.72);
-  --color-navbar-border: rgba(255, 255, 255, 0.1);
+  --color-navbar-bg: #0f0f0f;
+  --color-navbar-border: #2e2e2e;
 
   /* Chat */
-  --color-user-bubble: #0a84ff;
-  --color-bot-bubble: #2c2c2e;
-  --color-input-bg: #1c1c1e;
+  --color-user-bubble: #FF7849;
+  --color-bot-bubble: #262626;
+  --color-input-bg: #1a1a1a;
 
-  /* Color scheme */
   color-scheme: dark;
 }
 
 /* =============================================
-   TYPOGRAPHY - SF Pro Font Stack
+   TYPOGRAPHY
    ============================================= */
 :root {
-  /* Font Family */
-  --font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display',
-    'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-  /* Type Scale */
   --text-hero: clamp(48px, 8vw, 80px);
   --text-display: clamp(32px, 5vw, 56px);
   --text-title: clamp(24px, 3vw, 32px);
@@ -100,26 +114,20 @@
   --text-callout: 15px;
   --text-caption: 12px;
 
-  /* Font Weights */
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
 
-  /* Line Heights */
   --line-height-tight: 1.1;
   --line-height-snug: 1.25;
   --line-height-normal: 1.5;
-  --line-height-relaxed: 1.7;
 
-  /* Letter Spacing */
   --tracking-tight: -0.022em;
-  --tracking-normal: 0;
-  --tracking-wide: 0.012em;
 }
 
 /* =============================================
-   SPACING SYSTEM - 8px Base Unit
+   SPACING
    ============================================= */
 :root {
   --space-1: 4px;
@@ -131,42 +139,32 @@
   --space-7: 64px;
   --space-8: 80px;
   --space-9: 120px;
-  --space-10: 160px;
 
-  /* Section Padding */
-  --section-padding: clamp(80px, 12vw, 160px);
-
-  /* Container */
   --container-max: 980px;
   --container-wide: 1200px;
 }
 
 /* =============================================
-   COMPONENT TOKENS
+   COMPONENTS
    ============================================= */
 :root {
-  /* Buttons */
-  --btn-radius: 980px;
+  --btn-radius: 12px;
   --btn-radius-sm: 8px;
   --btn-padding: 12px 24px;
   --btn-padding-sm: 8px 16px;
 
-  /* Cards */
-  --card-radius: 18px;
+  --card-radius: 16px;
   --card-radius-sm: 12px;
 
-  /* Inputs */
   --input-radius: 12px;
   --input-height: 48px;
 
-  /* Transitions */
   --transition-fast: 150ms ease;
   --transition-normal: 250ms ease;
-  --transition-slow: 400ms ease;
 }
 
 /* =============================================
-   BASE RESET & GLOBAL STYLES
+   BASE RESET
    ============================================= */
 *,
 *::before,
@@ -179,7 +177,6 @@
 html {
   scroll-behavior: smooth;
   font-size: 16px;
-  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -190,8 +187,6 @@ body {
   color: var(--color-text-primary);
   background-color: var(--color-bg-primary);
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
 }
 
 body,
@@ -203,7 +198,6 @@ html,
   padding: 0;
 }
 
-/* Links */
 a {
   color: var(--color-accent);
   text-decoration: none;
@@ -214,13 +208,11 @@ a:hover {
   color: var(--color-accent-hover);
 }
 
-/* Focus States */
 :focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
 
-/* Selection */
 ::selection {
   background: var(--color-accent-light);
   color: var(--color-text-primary);
@@ -239,7 +231,6 @@ a:hover {
   max-width: var(--container-wide);
 }
 
-/* Typography Utilities */
 .text-hero {
   font-size: var(--text-hero);
   font-weight: var(--font-weight-bold);
@@ -251,25 +242,19 @@ a:hover {
   font-size: var(--text-display);
   font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-snug);
-  letter-spacing: var(--tracking-tight);
 }
 
 .text-title {
   font-size: var(--text-title);
   font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-snug);
 }
 
 .text-secondary {
   color: var(--color-text-secondary);
 }
 
-.text-tertiary {
-  color: var(--color-text-tertiary);
-}
-
 /* =============================================
-   BUTTON STYLES
+   BUTTONS
    ============================================= */
 .btn {
   display: inline-flex;
@@ -284,7 +269,6 @@ a:hover {
   border: none;
   cursor: pointer;
   transition: all var(--transition-normal);
-  text-decoration: none;
 }
 
 .btn--primary {
@@ -294,36 +278,62 @@ a:hover {
 
 .btn--primary:hover {
   background: var(--color-accent-hover);
+  transform: translateY(-1px);
 }
 
 .btn--secondary {
   background: transparent;
   color: var(--color-accent);
+  border: 1px solid var(--color-border);
 }
 
 .btn--secondary:hover {
   background: var(--color-accent-light);
+  border-color: var(--color-accent);
 }
 
-.btn--ghost {
-  background: transparent;
-  color: var(--color-text-secondary);
+.btn--gradient {
+  background: var(--gradient-primary);
+  color: #ffffff;
+  border: none;
 }
 
-.btn--ghost:hover {
-  color: var(--color-text-primary);
+.btn--gradient:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
 }
 
 /* =============================================
-   CARD STYLES
+   CARDS
    ============================================= */
 .card {
   background: var(--color-card-bg);
   border-radius: var(--card-radius);
+  border: 1px solid var(--color-border);
   box-shadow: var(--color-card-shadow);
-  transition: box-shadow var(--transition-normal);
+  transition: all var(--transition-normal);
 }
 
 .card:hover {
   box-shadow: var(--color-card-shadow-hover);
+  transform: translateY(-2px);
+}
+
+/* =============================================
+   ANIMATIONS
+   ============================================= */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.5s ease-out;
 }

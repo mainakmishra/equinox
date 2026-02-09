@@ -39,7 +39,7 @@
 
 .agent-card {
   background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
+  backdrop-filter: none;
   border-radius: 1.5rem;
   padding: 2rem;
   border: 2px solid rgba(255, 255, 255, 0.05);
@@ -62,7 +62,7 @@
 }
 
 .agent-card.purple {
-  color: #8b5cf6;
+  color: var(--color-accent);
 }
 
 .agent-card.green {
@@ -70,7 +70,7 @@
 }
 
 .agent-card.blue {
-  color: #3b82f6;
+  color: var(--color-accent);
 }
 
 .agent-card:hover {
@@ -171,7 +171,7 @@
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(8px);
+  backdrop-filter: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -184,6 +184,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -191,7 +192,7 @@
 
 .modal-content {
   background: rgba(13, 13, 15, 0.95);
-  backdrop-filter: blur(20px);
+  backdrop-filter: none;
   border-radius: 2rem;
   max-width: 800px;
   width: 100%;
@@ -209,6 +210,7 @@
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -272,7 +274,7 @@
 }
 
 .modal-content.purple .modal-icon-wrapper {
-  border-color: #8b5cf6;
+  border-color: var(--color-accent);
 }
 
 .modal-content.green .modal-icon-wrapper {
@@ -282,7 +284,7 @@
 
 .modal-content.blue .modal-icon-wrapper {
   background: rgba(59, 130, 246, 0.1);
-  border-color: #3b82f6;
+  border-color: var(--color-accent);
 }
 
 .modal-icon {
@@ -424,7 +426,7 @@
 }
 
 .action-btn.primary {
-  background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+  background: linear-gradient(135deg, var(--color-accent), #F59E0B);
   color: white;
 }
 
@@ -487,7 +489,7 @@
 }
 
 .network-node.productivity {
-  border-color: #8b5cf6;
+  border-color: var(--color-accent);
   box-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
 }
 
@@ -498,7 +500,7 @@
 }
 
 .network-node.briefing {
-  border-color: #3b82f6;
+  border-color: var(--color-accent);
   box-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
   animation-delay: 2s;
 }
@@ -511,9 +513,12 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.05);
   }
@@ -522,7 +527,7 @@
 .network-connection {
   width: 60px;
   height: 3px;
-  background: linear-gradient(90deg, #8b5cf6, #3b82f6, #22c55e);
+  background: linear-gradient(90deg, var(--color-accent), #F59E0B, #22c55e);
   position: relative;
   animation: flow 2s linear infinite;
 }
@@ -531,9 +536,11 @@
   0% {
     opacity: 0.3;
   }
+
   50% {
     opacity: 1;
   }
+
   100% {
     opacity: 0.3;
   }
