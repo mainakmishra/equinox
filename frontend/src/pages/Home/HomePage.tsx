@@ -3,7 +3,7 @@ import { Features } from "./Components/features";
 import { HowItWorks } from "./Components/how-it-works";
 import { MorningBriefing } from "./Components/morning-briefing";
 import { CTA } from "./Components/cta";
-import './styles/styles.css?v=2';
+import './styles/styles.css';
 import { Navbar } from '../../components/Navbar/Navbar';
 import SignedInNavbar from '../../components/Navbar/SignedInNavbar';
 import { isAuthenticated, clearAuth } from '../../utils/authUtils';
