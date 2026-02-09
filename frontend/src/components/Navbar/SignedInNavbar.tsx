@@ -36,6 +36,12 @@ export default function SignedInNavbar({ onSignOut }: { onSignOut?: () => void }
                         Wellness
                     </Link>
                     <Link
+                        className={`signed-navbar__link ${isActive('/briefing') ? 'active' : ''}`}
+                        to="/briefing"
+                    >
+                        Briefing
+                    </Link>
+                    <Link
                         className={`signed-navbar__link ${isActive('/notes') ? 'active' : ''}`}
                         to="/notes"
                     >

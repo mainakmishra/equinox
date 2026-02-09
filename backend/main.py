@@ -83,6 +83,10 @@ app.include_router(history_router)
 from api.emails import router as emails_router
 app.include_router(emails_router)
 
+from api.briefing import router as briefing_router
+app.include_router(briefing_router)
+
+
 class ChatRequest(BaseModel):
     message: str
     email: str | None = None
