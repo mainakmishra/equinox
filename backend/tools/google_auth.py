@@ -81,7 +81,7 @@ def google_callback(request: Request, db: Session = Depends(get_db)):
     userinfo_response.raise_for_status()
     userinfo = userinfo_response.json()
 
-    google_email = userinfo["email"]
+    google_email = userinfo["email"].lower()
     name = userinfo.get("name")
     avatar_url = userinfo.get("picture")
 
@@ -125,10 +125,11 @@ def get_gmail_service(tokens: dict):
     return build("gmail", "v1", credentials=creds)
 
 
-def fetch_recent_emails(service, max_results: int = 5):
+def fetch_recent_emails(service, max_results: int = 5, query: str = None):
     results = service.users().messages().list(
         userId="me",
         maxResults=max_results,
+        q=query
     ).execute()
 
     return results.get("messages", [])

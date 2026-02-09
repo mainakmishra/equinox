@@ -82,7 +82,7 @@ async def log_health(data: HealthLogCreate, db: Session = Depends(get_db)):
     
     user_id = UUID(TEST_USER_ID)
     if data.user_email:
-        user = db.query(User).filter(User.email == data.user_email).first()
+        user = db.query(User).filter(User.email == data.user_email.lower()).first()
         if user:
             user_id = user.id
             
