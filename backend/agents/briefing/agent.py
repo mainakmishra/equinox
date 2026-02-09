@@ -51,12 +51,27 @@ async def generate_briefing(user_email: str) -> dict:
     tasks_today = 0
     schedule_updated = False
     try:
+        # Local Todos
         from database.operations import get_all_todos
         todos = get_all_todos(user_email)
         if todos:
-            # Count incomplete tasks
-            tasks_today = len([t for t in todos if not t.get("completed", False)])
-            schedule_updated = tasks_today > 0
+            tasks_today += len([t for t in todos if not t.get("completed", False)])
+        
+        # Google Tasks
+        from state.user_tokens import get_user_tokens
+        from tools.google_auth import get_tasks_service, fetch_tasks
+        
+        tokens = get_user_tokens(user_email)
+        if tokens:
+            try:
+                task_service = get_tasks_service(tokens)
+                google_tasks = fetch_tasks(task_service, '@default')
+                # Count incomplete google tasks
+                tasks_today += len([t for t in google_tasks if t.get('status') != 'completed'])
+            except Exception as e:
+                print(f"Google Tasks fetch error in briefing: {e}")
+
+        schedule_updated = tasks_today > 0
     except Exception as e:
         print(f"Tasks fetch error: {e}")
     
