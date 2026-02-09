@@ -165,17 +165,64 @@ def get_todos(user_email: str, db: Session = Depends(get_db)):
     return get_todos_service(db, user_email)
 
 @router.delete("/{todo_id}")
-def delete_todo(todo_id: str, db: Session = Depends(get_db)):
+def delete_todo(todo_id: str, user_email: Optional[str] = None, db: Session = Depends(get_db)):
+    # Try local delete first
     success = delete_todo_service(db, todo_id)
-    if not success:
-         # It might be a Google task, silently fail or return 404? 
-         # For now, 404 is appropriate if not found in local DB
-         raise HTTPException(status_code=404, detail="Todo not found (or cannot delete Google Task yet)")
-    return {"message": "Todo deleted successfully"}
+    if success:
+        return {"message": "Todo deleted successfully"}
+        
+    # If fetch failed or wasn't a UUID, try Google Task
+    if user_email:
+        from tools.google_auth import get_tasks_service, delete_task
+        tokens = get_user_tokens(user_email)
+        if tokens:
+            try:
+                service = get_tasks_service(tokens)
+                delete_task(service, todo_id)
+                return {"message": "Google Task deleted successfully"}
+            except Exception as e:
+                print(f"Failed to delete Google Task: {e}")
+                
+    raise HTTPException(status_code=404, detail="Todo not found (or failed to delete Google Task)")
 
 @router.put("/{todo_id}", response_model=TodoResponse)
-def update_todo(todo_id: str, updates: TodoUpdate, db: Session = Depends(get_db)):
+def update_todo(todo_id: str, updates: TodoUpdate, user_email: Optional[str] = None, db: Session = Depends(get_db)):
+    # Try local update first
     updated_todo = update_todo_service(db, todo_id, updates)
-    if not updated_todo:
-        raise HTTPException(status_code=404, detail="Todo not found (or cannot update Google Task yet)")
-    return updated_todo
+    if updated_todo:
+        return updated_todo
+        
+    # Try Google Task update
+    if user_email:
+        from tools.google_auth import get_tasks_service, update_task
+        tokens = get_user_tokens(user_email)
+        if tokens:
+            try:
+                service = get_tasks_service(tokens)
+                
+                status = None
+                if updates.completed is not None:
+                    status = 'completed' if updates.completed else 'needsAction'
+                
+                due = None
+                if updates.due_date:
+                    # Convert date to RFC 3339 string (e.g. 2023-10-01T00:00:00.000Z)
+                    due = f"{updates.due_date.isoformat()}T00:00:00.000Z"
+                
+                g_task = update_task(service, todo_id, title=updates.text, status=status, due=due)
+                
+                # Convert back to response model
+                is_completed = g_task.get('status') == 'completed'
+                
+                return TodoResponse(
+                    id=g_task.get('id'),
+                    user_email=user_email,
+                    text=g_task.get('title'),
+                    completed=is_completed,
+                    due_date=updates.due_date, # Use passed due date as approximation or parse from response
+                    created_at=datetime.now() # Mock
+                )
+            except Exception as e:
+                print(f"Failed to update Google Task: {e}")
+
+    raise HTTPException(status_code=404, detail="Todo not found (or failed to update Google Task)")

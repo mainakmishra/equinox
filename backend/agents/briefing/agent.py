@@ -32,30 +32,19 @@ async def generate_briefing(user_email: str) -> dict:
     except Exception as e:
         print(f"Health data fetch error: {e}")
     
-    # 2. Get email count
-    critical_emails = 0
-    try:
-        from state.user_tokens import get_user_tokens
-        from tools.google_auth import get_gmail_service, fetch_recent_emails
-        
-        tokens = get_user_tokens(user_email)
-        if tokens:
-            service = get_gmail_service(tokens)
-            emails = fetch_recent_emails(service, max_results=10)
-            # Count unread important emails
-            critical_emails = len([e for e in emails if 'UNREAD' in e.get('labelIds', [])])
-    except Exception as e:
-        print(f"Email fetch error: {e}")
-    
     # 3. Get tasks count
     tasks_today = 0
     schedule_updated = False
+    task_titles = []
+    
     try:
         # Local Todos
         from database.operations import get_all_todos
         todos = get_all_todos(user_email)
         if todos:
-            tasks_today += len([t for t in todos if not t.get("completed", False)])
+            local_incomplete = [t for t in todos if not t.get("completed", False)]
+            tasks_today += len(local_incomplete)
+            task_titles.extend([t['text'] for t in local_incomplete])
         
         # Google Tasks
         from state.user_tokens import get_user_tokens
@@ -67,7 +56,10 @@ async def generate_briefing(user_email: str) -> dict:
                 task_service = get_tasks_service(tokens)
                 google_tasks = fetch_tasks(task_service, '@default')
                 # Count incomplete google tasks
-                tasks_today += len([t for t in google_tasks if t.get('status') != 'completed'])
+                g_incomplete = [t for t in google_tasks if t.get('status') != 'completed']
+                tasks_today += len(g_incomplete)
+                task_titles.extend([t.get('title', 'Untitled') for t in g_incomplete])
+                print(f"Debug: Found {len(g_incomplete)} Google tasks for {user_email}")
             except Exception as e:
                 print(f"Google Tasks fetch error in briefing: {e}")
 
@@ -75,6 +67,40 @@ async def generate_briefing(user_email: str) -> dict:
     except Exception as e:
         print(f"Tasks fetch error: {e}")
     
+    # 2. Get emails (Moved after tasks for better context flow)
+    critical_emails = 0
+    email_summaries = []
+    try:
+        from tools.google_auth import get_gmail_service, fetch_recent_emails
+        
+        if tokens: # Re-use tokens from above
+            service = get_gmail_service(tokens)
+            emails = fetch_recent_emails(service, max_results=5) # Fetch last 5
+            
+            for e in emails:
+                # Get details for better context
+                # We need a helper to get snippet if not present, but fetch_recent_emails usually returns snippet
+                snippet = e.get('snippet', '')
+                
+                # Naive critical check: UNREAD from 'important' people or just UNREAD?
+                # For now, just count UNREAD
+                is_unread = 'UNREAD' in e.get('labelIds', [])
+                if is_unread:
+                    critical_emails += 1
+                
+                # Get subject (need to fetch full message for subject usually, but let's try to use snippet)
+                # Actually fetch_recent_emails in google_auth.py only does listing.
+                # We should get details if we want good summary.
+                # But for speed, let's use the list result which has threadId and snippet.
+                # To get Subject, we need 'payload' which isn't always in list response unless fields specified.
+                # Let's trust the LLM to infer from snippet or just generic "Emails".
+                # Improving specific email fetching would start to be slow.
+                # Let's add a quick subject fetch if we can, or just use snippet.
+                email_summaries.append(f"- {snippet[:100]}...")
+
+    except Exception as e:
+        print(f"Email fetch error: {e}")
+
     # 4. Generate AI summary
     summary = ""
     try:
@@ -88,14 +114,18 @@ async def generate_briefing(user_email: str) -> dict:
             """You are a helpful AI assistant creating a brief morning summary.
             
             User's data:
-            - Sleep score: {sleep_score}/100
-            - Critical emails: {emails}
-            - Tasks today: {tasks}
+            - Sleep score: {sleep_score}/100 (If 0, assume no data tracked)
+            - Unread Emails: {emails}
+            - Recent Email Snippets: {email_context}
+            - Tasks Count: {tasks}
+            - Task List: {task_list}
             
-            Generate a warm, encouraging 2-3 sentence morning briefing.
-            Focus on what they should prioritize today based on their readiness.
-            If sleep is low (<70), suggest lighter tasks.
-            Keep it friendly and actionable.
+            Generate a warm, encouraging morning briefing (max 3 sentences).
+            1. Acknowledge their health status (if sleep score > 0). If 0, suggest tracking sleep or taking it easy.
+            2. Mention their workload (tasks). Mention specific high-priority sounding tasks if any.
+            3. Mention if checking emails is urgent based on snippets.
+            
+            Keep it friendly, concise, and actionable.
             """
         )
         
@@ -103,13 +133,15 @@ async def generate_briefing(user_email: str) -> dict:
         response = chain.invoke({
             "sleep_score": sleep_score,
             "emails": critical_emails,
-            "tasks": tasks_today
+            "email_context": "; ".join(email_summaries) if email_summaries else "No recent emails",
+            "tasks": tasks_today,
+            "task_list": ", ".join(task_titles[:5]) # Pass first 5 task titles
         })
         
         summary = response.content
     except Exception as e:
         print(f"LLM summary error: {e}")
-        summary = "Have a great day! Focus on your priorities and take breaks when needed."
+        summary = "Have a great day! Focus on your priorities."
     
     # Extract user name from email
     user_name = user_email.split('@')[0].title()
