@@ -33,75 +33,55 @@ async def generate_briefing(user_email: str) -> dict:
     except Exception as e:
         print(f"Health data fetch error: {e}")
     
-    # 3. Get tasks count
+    # 2. Get Tasks & Emails
     tasks_today = 0
     schedule_updated = False
     task_titles = []
-    
-    try:
-        # Local Todos
-        from database.operations import get_all_todos
-        todos = get_all_todos(user_email)
-        if todos:
-            local_incomplete = [t for t in todos if not t.get("completed", False)]
-            tasks_today += len(local_incomplete)
-            task_titles.extend([t['text'] for t in local_incomplete])
-        
-        # Google Tasks
-        from state.user_tokens import get_user_tokens
-        from tools.google_auth import get_tasks_service, fetch_tasks
-        
-        tokens = get_user_tokens(user_email)
-        if tokens:
-            try:
-                task_service = get_tasks_service(tokens)
-                google_tasks = fetch_tasks(task_service, '@default')
-                # Count incomplete google tasks
-                g_incomplete = [t for t in google_tasks if t.get('status') != 'completed']
-                tasks_today += len(g_incomplete)
-                task_titles.extend([t.get('title', 'Untitled') for t in g_incomplete])
-                print(f"Debug: Found {len(g_incomplete)} Google tasks for {user_email}")
-            except Exception as e:
-                print(f"Google Tasks fetch error in briefing: {e}")
-
-        schedule_updated = tasks_today > 0
-    except Exception as e:
-        print(f"Tasks fetch error: {e}")
-    
-    # 2. Get emails (Moved after tasks for better context flow)
     critical_emails = 0
     email_summaries = []
+    
+    # Get tokens ONCE for both services
     try:
-        from tools.google_auth import get_gmail_service, fetch_recent_emails
-        
-        if tokens: # Re-use tokens from above
-            service = get_gmail_service(tokens)
-            # Fetch specifically unread emails to get accurate critical count
-            emails = fetch_recent_emails(service, max_results=10, query='is:unread')
-            
-            for e in emails:
-                # Get details for better context
-                # We need a helper to get snippet if not present, but fetch_recent_emails usually returns snippet
-                snippet = e.get('snippet', '')
-                
-                # Naive critical check: UNREAD from 'important' people or just UNREAD?
-                # For now, just count UNREAD
-                is_unread = 'UNREAD' in e.get('labelIds', [])
-                if is_unread:
-                    critical_emails += 1
-                
-                # Get subject (need to fetch full message for subject usually, but let's try to use snippet)
-                # Actually fetch_recent_emails in google_auth.py only does listing.
-                # We should get details if we want good summary.
-                # But for speed, let's use the list result which has threadId and snippet.
-                # To get Subject, we need 'payload' which isn't always in list response unless fields specified.
-                # Let's trust the LLM to infer from snippet or just generic "Emails".
-                # Improving specific email fetching would start to be slow.
-                # Let's add a quick subject fetch if we can, or just use snippet.
-                email_summaries.append(f"- {snippet[:100]}...")
-
+        from state.user_tokens import get_user_tokens
+        tokens = get_user_tokens(user_email)
     except Exception as e:
-        print(f"Email fetch error: {e}")
+        print(f"Token fetch error: {e}")
+        tokens = None
+
+    # TASKS
+    try:
+        # Use the unified service that gets Local + Google tasks
+        from api.todos import get_todos_service
+        
+        # This returns List[TodoResponse]
+        all_todos = get_todos_service(db, user_email)
+        
+        # Filter for incomplete
+        incomplete_todos = [t for t in all_todos if not t.completed]
+        tasks_today = len(incomplete_todos)
+        schedule_updated = tasks_today > 0
+        task_titles = [t.text for t in incomplete_todos]
+        
+    except Exception as e:
+        print(f"Tasks fetch error: {e}")
+
+    # EMAILS
+    if tokens:
+        try:
+            from tools.google_auth import get_gmail_service, fetch_recent_emails
+            
+            service = get_gmail_service(tokens)
+            # Fetch specifically unread emails
+            emails = fetch_recent_emails(service, max_results=10, query='is:unread')
+            critical_emails = len(emails)
+            
+            # Get snippets for first 5 for the summary
+            for e in emails[:5]:
+                snippet = e.get('snippet', '')
+                email_summaries.append(f"- {snippet[:150]}...")
+                
+        except Exception as e:
+            print(f"Email fetch error: {e}")
 
     # 4. Generate AI summary
     summary = ""
