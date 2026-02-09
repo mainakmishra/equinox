@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 class HealthLogCreate(BaseModel):
     """input for logging health data"""
     
+    user_email: Optional[str] = None
     # date - defaults to today if not provided
     date: Optional[date] = None
     

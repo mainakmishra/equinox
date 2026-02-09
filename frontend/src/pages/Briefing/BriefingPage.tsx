@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { getUserEmail, isAuthenticated, clearAuth } from '../../utils/authUtils';
 import { generateBriefing, sendBriefingEmail, type BriefingResponse } from '../../api/briefingApi';
 import { fetchTodos, type Todo } from '../../api/todosApi';
